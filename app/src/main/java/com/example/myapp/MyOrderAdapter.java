@@ -1,5 +1,6 @@
 package com.example.myapp;
 
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -36,7 +37,7 @@ public class MyOrderAdapter extends RecyclerView.Adapter<MyOrderAdapter.Viewhold
         int rating = myOrderItemModelList.get( position ).getRating();
         String title = myOrderItemModelList.get( position ).getProductTitle();
         String deliveryDate = myOrderItemModelList.get( position ).getDeliveryStatus();
-        holder.setData( resource,title,deliveryDate,rating );
+        holder.setData( resource, title, deliveryDate, rating );
     }
 
     @Override
@@ -60,9 +61,17 @@ public class MyOrderAdapter extends RecyclerView.Adapter<MyOrderAdapter.Viewhold
             productTitle = itemView.findViewById( R.id.product_title );
             deliveryStatus = itemView.findViewById( R.id.order_delivered_date );
             rateNowContainer = itemView.findViewById( R.id.rate_now_container1 );
+
+            itemView.setOnClickListener( new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent orderDetailsIntent = new Intent(itemView.getContext(),OrderDetailsActivity.class);
+                    itemView.getContext().startActivity( orderDetailsIntent );
+                }
+            } );
         }
 
-        private void setData(int resource, String title, String deliveryDate,int rating) {
+        private void setData(int resource, String title, String deliveryDate, int rating) {
             productImage.setImageResource( resource );
             productTitle.setText( title );
             if (deliveryDate.equals( "Cancelled" )) {
