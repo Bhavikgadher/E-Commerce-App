@@ -2,20 +2,22 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-
     <data>
     </data>
+
 <FrameLayout
+    android:id="@+id/reward_item"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MyWishlistFragment">
+    tools:context=".MyRewardsFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_my_wishlist"
+        android:id="@+id/rv_my_rewards"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:orientation="vertical"
-        android:background="@color/RecyclerViewBackGround"/>
+        android:background="@drawable/reward_gradient_background" />
 </FrameLayout>
+
 </layout>

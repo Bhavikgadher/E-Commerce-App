@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -25,11 +27,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FrameLayout frameLayout;
     public ActionBarDrawerToggle actionBarDrawerToggle;
 
+    private Window window;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
         binding = DataBindingUtil.setContentView( this, R.layout.activity_main );
         setSupportActionBar( binding.appBarMain.toolbar );
+        window = getWindow();
+        window.addFlags( WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS );
+
         actionBarDrawerToggle = new ActionBarDrawerToggle( this, binding.drawerLayout, R.string.lbl_open, R.string.lbl_close );
         binding.drawerLayout.addDrawerListener( actionBarDrawerToggle );
         actionBarDrawerToggle.syncState();
@@ -108,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_my_wishlist) {
             gotoFragment( "My Wishlist", new MyWishlistFragment() );
         } else if (id == R.id.nav_my_rewards) {
+            gotoFragment( "My Rewards",new MyRewardsFragment() );
         } else if (id == R.id.nav_my_account) {
         } else if (id == R.id.nav_sign_out) {
         }

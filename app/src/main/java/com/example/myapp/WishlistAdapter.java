@@ -18,6 +18,7 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHo
     private List<WishlistModel> wishlistModelList;
 
     public WishlistAdapter(List<WishlistModel> wishlistModelList) {
+        this.wishlistModelList =wishlistModelList;
     }
 
     @NonNull
@@ -45,7 +46,7 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHo
         return wishlistModelList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView productImage;
         private ImageView coupenIcon;
@@ -64,13 +65,13 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHo
             super( itemView );
 
             productImage = itemView.findViewById( R.id.product_image );
-            coupenIcon = itemView.findViewById( R.id.category_icon );
+            coupenIcon = itemView.findViewById( R.id.coupen_icon );
             productTitle = itemView.findViewById( R.id.product_title );
             freeCopens = itemView.findViewById( R.id.free_coupen );
             rating = itemView.findViewById( R.id.tv_product_rating_miniView );
             totalRatings = itemView.findViewById( R.id.total_ratings );
             priceCutter = itemView.findViewById( R.id.price_cutter );
-            productPrice = itemView.findViewById( R.id.product_prices );
+            productPrice = itemView.findViewById( R.id.product_price );
             cuttedPrice = itemView.findViewById( R.id.cutted_price );
             paymentMethod = itemView.findViewById( R.id.payment_method );
             deleteBtn = itemView.findViewById( R.id.delete_btn );
@@ -97,12 +98,7 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHo
             paymentMethod.setText( payMethod );
 
 
-            deleteBtn.setOnClickListener( new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText( itemView.getContext(), "delete", Toast.LENGTH_SHORT ).show();
-                }
-            } );
+            deleteBtn.setOnClickListener( view -> Toast.makeText( itemView.getContext(), "delete", Toast.LENGTH_SHORT ).show() );
         }
     }
 }
