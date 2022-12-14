@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_my_cart) {
             gotoFragment( "My Cart", new MyCartFragment() );
         } else if (id == R.id.nav_my_wishlist) {
+            gotoFragment( "My Wishlist", new MyWishlistFragment() );
         } else if (id == R.id.nav_my_rewards) {
         } else if (id == R.id.nav_my_account) {
         } else if (id == R.id.nav_sign_out) {
