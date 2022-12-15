@@ -40,7 +40,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_marginTop="55dp">
 
                 <include
                     android:id="@+id/inc_content"
@@ -70,7 +71,8 @@
                     android:id="@+id/ratings_content"
                     layout="@layout/ratigns_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="110dp" />
 
 
             </LinearLayout>

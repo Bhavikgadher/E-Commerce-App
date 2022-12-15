@@ -115,8 +115,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_my_wishlist) {
             gotoFragment( "My Wishlist", new MyWishlistFragment() );
         } else if (id == R.id.nav_my_rewards) {
-            gotoFragment( "My Rewards",new MyRewardsFragment() );
+            gotoFragment( "My Rewards", new MyRewardsFragment() );
         } else if (id == R.id.nav_my_account) {
+            gotoFragment( "My Account", new MyAccountFragment() );
         } else if (id == R.id.nav_sign_out) {
         }
         return true;

@@ -83,7 +83,7 @@
         app:layout_constraintTop_toBottomOf="@+id/total_ratings">
 
         <ProgressBar
-            android:id="@+id/progressBar1"
+            android:id="@+id/packed_shipping_pb"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -95,7 +95,7 @@
             android:progressTint="@color/green" />
 
         <ProgressBar
-            android:id="@+id/progressBar2"
+            android:id="@+id/shipped_delivered_pb"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
