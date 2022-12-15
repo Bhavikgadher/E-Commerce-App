@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         actionBarDrawerToggle.syncState();
         // to make the Navigation drawer icon always appear on the action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled( true );
+        getSupportActionBar().setDisplayShowTitleEnabled( false );
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
