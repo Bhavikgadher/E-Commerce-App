@@ -1,5 +1,6 @@
 package com.example.myapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -7,7 +8,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapp.databinding.ActivityDeliveryBinding;
 
@@ -17,7 +17,8 @@ import java.util.List;
 public class DeliveryActivity extends AppCompatActivity {
 
     private ActivityDeliveryBinding binding;
-    private RecyclerView deliveryRecyclerView;
+    public static final int SELECT_ADDRESS =  0;
+//    private RecyclerView deliveryRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +28,7 @@ public class DeliveryActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled( true );
         getSupportActionBar().setTitle( "Delivery" );
 
-     deliveryRecyclerView = findViewById( R.id.rv_delivery );
+//     deliveryRecyclerView = findViewById( R.id.rv_delivery );
 
         List<CartItemModel> cartItemModelList = new ArrayList<>();
         cartItemModelList.add( new CartItemModel( 0, R.mipmap.ic_12_min, "Iphone 12 Min", 2, "Rs.49,999/-", "Rs.59,999/-", 1, 0, 0 ) );
@@ -36,10 +37,18 @@ public class DeliveryActivity extends AppCompatActivity {
         cartItemModelList.add( new CartItemModel( 1, "Iphone(3 items)", "Rs.1,20,999/-", "Free", "Rs.1,20,999/-", "Rs.9999/-" ) );
 
         CartAdapter cartAdapter = new CartAdapter( cartItemModelList );
-        deliveryRecyclerView.setAdapter( cartAdapter );
+        binding.rvDelivery.setAdapter( cartAdapter );
         cartAdapter.notifyDataSetChanged();
 
         binding.shippingContent.changOrAddAddressBtn.setVisibility( View.VISIBLE );
+        binding.shippingContent.changOrAddAddressBtn.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myAddressesIntent = new Intent(DeliveryActivity.this,MyAddressesActivity.class);
+                myAddressesIntent.putExtra( "MODE",SELECT_ADDRESS );
+                startActivity( myAddressesIntent );
+            }
+        } );
     }
 
     @Override
