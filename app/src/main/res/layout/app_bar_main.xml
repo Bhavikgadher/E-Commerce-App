@@ -32,8 +32,6 @@
                     android:adjustViewBounds="true" />
 
             </androidx.appcompat.widget.Toolbar>
-
-
         </com.google.android.material.appbar.AppBarLayout>
 
         <include android:id="@+id/inc_main" layout="@layout/content_main" />

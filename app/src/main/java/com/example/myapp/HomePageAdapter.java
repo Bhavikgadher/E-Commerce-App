@@ -1,10 +1,9 @@
 package com.example.myapp;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,14 +17,12 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.function.LongBinaryOperator;
 
 @SuppressLint("ViewConstructor")
 public class HomePageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -225,6 +222,14 @@ public class HomePageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             horizontalLayoutTitle.setText( title );
             if (horizontalProductScrollModelList.size() > 8) {
                 horizontalLayoutViewAllBtn.setVisibility( View.VISIBLE );
+                horizontalLayoutViewAllBtn.setOnClickListener( new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent viewAllIntent = new Intent(itemView.getContext(),ViewAllActivity.class);
+                        viewAllIntent.putExtra( "layout_code",0 );
+                        itemView.getContext().startActivity( viewAllIntent );
+                    }
+                } );
             } else {
                 horizontalLayoutViewAllBtn.setVisibility( View.INVISIBLE );
             }
@@ -253,6 +258,14 @@ public class HomePageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         private void setGridProductLayout(List<HorizontalProductScrollModel> horizontalProductScrollModelList, String title) {
             gridLayoutTitle.setText( title );
             gridView.setAdapter( new GridProductLayoutAdapter( horizontalProductScrollModelList ) );
+            gridLayoutViewAllBtn.setOnClickListener( new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent viewAllIntent = new Intent(itemView.getContext(),ViewAllActivity.class);
+                    viewAllIntent.putExtra( "layout_code",1 );
+                    itemView.getContext().startActivity( viewAllIntent );
+                }
+            } );
 
         }
     }

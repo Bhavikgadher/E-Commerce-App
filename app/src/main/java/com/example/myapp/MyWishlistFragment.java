@@ -38,7 +38,7 @@ public class MyWishlistFragment extends Fragment {
         wishlistModelList.add( new WishlistModel( R.mipmap.ic_12_min, "Iphone 12 min", 5, "5", 145, "Rs.69,999/-", "Rs.78,999/-", "Case on Delivery" ) );
         wishlistModelList.add( new WishlistModel( R.mipmap.ic_13_plus, "Iphone 13 plus", 6, "5", 145, "Rs.59,999/-", "Rs.68,999/-", "Case on Delivery" ) );
 
-        WishlistAdapter wishlistAdapter = new WishlistAdapter( wishlistModelList );
+        WishlistAdapter wishlistAdapter = new WishlistAdapter( wishlistModelList,true );
         wishlistRecyclerView.setAdapter( wishlistAdapter );
         wishlistAdapter.notifyDataSetChanged();
         return view;
