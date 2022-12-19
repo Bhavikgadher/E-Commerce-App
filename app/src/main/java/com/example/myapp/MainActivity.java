@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ActivityMainBinding binding;
     private FrameLayout frameLayout;
     public ActionBarDrawerToggle actionBarDrawerToggle;
+    public static Boolean showCart = false;
 
     private Window window;
 
@@ -37,18 +38,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         window = getWindow();
         window.addFlags( WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS );
 
-        actionBarDrawerToggle = new ActionBarDrawerToggle( this, binding.drawerLayout, R.string.lbl_open, R.string.lbl_close );
-        binding.drawerLayout.addDrawerListener( actionBarDrawerToggle );
-        actionBarDrawerToggle.syncState();
+
         // to make the Navigation drawer icon always appear on the action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled( true );
         getSupportActionBar().setDisplayShowTitleEnabled( false );
 
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
 //        binding.navView.getMenu().getItem( 0 ).setChecked( true );
         binding.navView.setNavigationItemSelectedListener( this );
-        setFragment( new HomeFragment() );
+
+        if (showCart) {
+            binding.drawerLayout.setDrawerLockMode(binding.drawerLayout.LOCK_MODE_LOCKED_CLOSED );
+            getSupportActionBar().setDisplayHomeAsUpEnabled( true );
+            gotoFragment( "My Cart",new MyCartFragment() );
+        } else {
+            actionBarDrawerToggle = new ActionBarDrawerToggle( this, binding.drawerLayout, R.string.lbl_open, R.string.lbl_close );
+            binding.drawerLayout.addDrawerListener( actionBarDrawerToggle );
+            actionBarDrawerToggle.syncState();
+            setFragment( new HomeFragment() );
+        }
+
 
     }
 
@@ -65,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (actionBarDrawerToggle.onOptionsItemSelected( item )) {
-            return true;
+            return false;
         }
         int id = item.getItemId();
         if (id == R.id.main_search_icon) {
@@ -81,6 +89,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             gotoFragment( "My Cart", new MyCartFragment() );
             Log.e( "LOG_LOG", "main_cart_icon" );
             return true;
+        }else if (id == android.R.id.home){
+            if(showCart){
+                showCart = false;
+                finish();
+                return true;
+            }
         }
         return super.onOptionsItemSelected( item );
     }

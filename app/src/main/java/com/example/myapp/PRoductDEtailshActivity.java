@@ -1,5 +1,7 @@
 package com.example.myapp;
 
+import static com.example.myapp.MainActivity.showCart;
+
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -60,7 +62,7 @@ public class PRoductDEtailshActivity extends AppCompatActivity {
         binding.productDescriptionContent.productDetalisTablayout.addOnTabSelectedListener( new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                binding.productDescriptionContent.productDetalisViewpager.setCurrentItem( tab.getPosition());
+                binding.productDescriptionContent.productDetalisViewpager.setCurrentItem( tab.getPosition() );
             }
 
             @Override
@@ -74,29 +76,29 @@ public class PRoductDEtailshActivity extends AppCompatActivity {
             }
         } );
 
-        for(int x = 0 ; x<binding.ratingsContent.rateNowContainer.getChildCount();x++){
+        for (int x = 0; x < binding.ratingsContent.rateNowContainer.getChildCount(); x++) {
             final int starPosition = x;
             binding.ratingsContent.rateNowContainer.getChildAt( x ).setOnClickListener( new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    setRating(starPosition);
+                    setRating( starPosition );
                 }
             } );
         }
         binding.buyNowBtn.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent deliveryIntent = new Intent(PRoductDEtailshActivity.this,DeliveryActivity.class);
+                Intent deliveryIntent = new Intent( PRoductDEtailshActivity.this, DeliveryActivity.class );
                 startActivity( deliveryIntent );
             }
         } );
     }
 
     private void setRating(int starPosition) {
-        for(int x = 0; x<binding.ratingsContent.rateNowContainer.getChildCount();x++){
+        for (int x = 0; x < binding.ratingsContent.rateNowContainer.getChildCount(); x++) {
             ImageView starBtn = (ImageView) binding.ratingsContent.rateNowContainer.getChildAt( x );
             starBtn.setImageTintList( ColorStateList.valueOf( Color.parseColor( "#bebebe" ) ) );
-            if(x<= starPosition){
+            if (x <= starPosition) {
                 starBtn.setImageTintList( ColorStateList.valueOf( Color.parseColor( "#FBC02D" ) ) );
             }
         }
@@ -125,6 +127,10 @@ public class PRoductDEtailshActivity extends AppCompatActivity {
             return true;
         } else if (id == R.id.main_cart_icon) {
             Log.e( "LOG_LOG", "main_cart_icon" );
+            Intent cartIntent = new Intent( PRoductDEtailshActivity.this, MainActivity.class );
+            showCart = true;
+            startActivity( cartIntent );
+
             return true;
         }
         return super.onOptionsItemSelected( item );

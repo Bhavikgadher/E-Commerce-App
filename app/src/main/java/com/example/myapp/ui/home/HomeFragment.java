@@ -40,7 +40,7 @@ public class HomeFragment extends Fragment {
 
         List<HomePageModel> homePageModelList = new ArrayList<>();
         homePageModelList.add( new HomePageModel( 0, provideFakeSliderList() ) );
-        homePageModelList.add( new HomePageModel( 1, R.drawable.ic_baseline_home_24, "#FFFFFFFF" ) );
+        homePageModelList.add( new HomePageModel( 1, R.mipmap.demo_slide, "#FFFFFFFF" ) );
         homePageModelList.add( new HomePageModel( 2, "Deals Of The Day", provideFakeProductList() ) );
         homePageModelList.add( new HomePageModel( 3, "Deals Of The Day", provideFakeProductList() ) );
 
@@ -71,20 +71,13 @@ public class HomeFragment extends Fragment {
     }
     public List<SliderModel> provideFakeSliderList(){
         List<SliderModel> sliderModelList = new ArrayList<>();
-
-        sliderModelList.add( new SliderModel( R.drawable.ic_baseline_close_24, "#0320FF" ) );
-        sliderModelList.add( new SliderModel( R.drawable.ic_menu_camera, "#0320FF" ) );
         sliderModelList.add( new SliderModel( R.drawable.ic_baseline_mark_email_read_24, "#0320FF" ) );
-
         sliderModelList.add( new SliderModel( R.drawable.ic_baseline_email_24, "#0320FF" ) );
         sliderModelList.add( new SliderModel( R.drawable.ic_baseline_add_24, "#0320FF" ) );
         sliderModelList.add( new SliderModel( R.mipmap.demo_slide, "#0320FF" ) );
         sliderModelList.add( new SliderModel( R.drawable.ic_baseline_search_24, "#0320FF" ) );
         sliderModelList.add( new SliderModel( R.drawable.ic_baseline_close_24, "#0320FF" ) );
-
         sliderModelList.add( new SliderModel( R.drawable.ic_menu_camera, "#0320FF" ) );
-        sliderModelList.add( new SliderModel( R.drawable.ic_baseline_mark_email_read_24, "#0320FF" ) );
-        sliderModelList.add( new SliderModel( R.drawable.ic_baseline_email_24, "#0320FF" ) );
         return sliderModelList;
     }
 
