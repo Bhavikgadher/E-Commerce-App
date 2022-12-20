@@ -1,6 +1,10 @@
 package com.example.myapp;
 
+import android.app.Dialog;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -111,7 +115,7 @@ public class CartItemModel {
     //////cart total
     private String totalItems;
     private String totalItemPrice;
-    private String saveAmount ;
+    private String saveAmount;
     private String deliveryPrice;
     private String totalAmount;
 
@@ -196,7 +200,7 @@ public class CartItemModel {
                 freeCopensIcon.setVisibility( View.VISIBLE );
                 freeCopens.setVisibility( View.VISIBLE );
                 if (freeCopensNo == 1) {
-                    freeCopens.setText( " free "  + freeCopensNo + " Coupen " );
+                    freeCopens.setText( " free " + freeCopensNo + " Coupen " );
                 } else {
                     freeCopens.setText( " free " + freeCopensNo + " Coupen " );
                 }
@@ -212,8 +216,36 @@ public class CartItemModel {
             } else {
                 this.offersApplied.setVisibility( View.INVISIBLE );
             }
+            productQuantity.setOnClickListener( new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Dialog quantityDialog = new Dialog( itemView.getContext() );
+                    quantityDialog.setContentView( R.layout.quantity_dialog );
+                    quantityDialog.getWindow().setLayout( ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT );
+                    quantityDialog.setCancelable( false );
+                    EditText quantityNo = quantityDialog.findViewById( R.id.quantity_no );
+                    Button cancelBtn = quantityDialog.findViewById( R.id.quantity_cancel_btn );
+                    Button okBtn = quantityDialog.findViewById( R.id.quantity_ok_btn );
+
+                    cancelBtn.setOnClickListener( new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            quantityDialog.dismiss();
+                        }
+                    } );
+                    okBtn.setOnClickListener( new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            productQuantity.setText( "Qty:" + quantityNo.getText() );
+                            quantityDialog.dismiss();
+                        }
+                    } );
+                    quantityDialog.show();
+                }
+            } );
         }
     }
+
     public static class CartTotalAmountViewholder extends RecyclerView.ViewHolder {
         private TextView totalItems;
         private TextView totalItemsPrice;
@@ -228,11 +260,12 @@ public class CartItemModel {
             totalItemsPrice = itemView.findViewById( R.id.total_item_price );
             deliveryPrice = itemView.findViewById( R.id.delivery_price );
             totalAmount = itemView.findViewById( R.id.total_price );
-            savedAmount= itemView.findViewById( R.id.saved_amount );
+            savedAmount = itemView.findViewById( R.id.saved_amount );
         }
-        void setTotalAmount(String totalItemText, String totalItemPriceText, String deliveryPriceText, String totalAmountText, String savedAmountText){
+
+        void setTotalAmount(String totalItemText, String totalItemPriceText, String deliveryPriceText, String totalAmountText, String savedAmountText) {
             totalItems.setText( totalItemText );
-            totalItemsPrice.setText(  totalItemPriceText);
+            totalItemsPrice.setText( totalItemPriceText );
             deliveryPrice.setText( deliveryPriceText );
             totalAmount.setText( totalAmountText );
             savedAmount.setText( savedAmountText );

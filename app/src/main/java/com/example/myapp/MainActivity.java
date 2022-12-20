@@ -1,12 +1,18 @@
 package com.example.myapp;
 
+import static com.example.myapp.RegisterActivity.setSignUpFragment;
+
+import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -47,9 +53,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         binding.navView.setNavigationItemSelectedListener( this );
 
         if (showCart) {
-            binding.drawerLayout.setDrawerLockMode(binding.drawerLayout.LOCK_MODE_LOCKED_CLOSED );
+            binding.drawerLayout.setDrawerLockMode( binding.drawerLayout.LOCK_MODE_LOCKED_CLOSED );
             getSupportActionBar().setDisplayHomeAsUpEnabled( true );
-            gotoFragment( "My Cart",new MyCartFragment() );
+            gotoFragment( "My Cart", new MyCartFragment() );
         } else {
             actionBarDrawerToggle = new ActionBarDrawerToggle( this, binding.drawerLayout, R.string.lbl_open, R.string.lbl_close );
             binding.drawerLayout.addDrawerListener( actionBarDrawerToggle );
@@ -86,11 +92,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             return true;
         } else if (id == R.id.main_cart_icon) {
-            gotoFragment( "My Cart", new MyCartFragment() );
+
+            Dialog signInDialog = new Dialog( MainActivity.this );
+            signInDialog.setContentView( R.layout.sign_in_dialog );
+            signInDialog.setCancelable( true );
+
+            signInDialog.getWindow().setLayout( ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT );
+
+            Button dialogSignInBtn = signInDialog.findViewById( R.id.sign_In_dialog_btn );
+            Button dialogSignUpBtn = signInDialog.findViewById( R.id.sign_up_dialog_btn );
+
+            Intent registerIntent = new Intent( MainActivity.this, RegisterActivity.class );
+            dialogSignInBtn.setOnClickListener( view -> {
+                signInDialog.dismiss();
+                setSignUpFragment = false;
+                startActivity( registerIntent );
+            } );
+            dialogSignUpBtn.setOnClickListener( view -> {
+                signInDialog.dismiss();
+                setSignUpFragment = true;
+                startActivity( registerIntent );
+            } );
+            signInDialog.show();
+
+
+//            gotoFragment( "My Cart", new MyCartFragment() );
             Log.e( "LOG_LOG", "main_cart_icon" );
             return true;
-        }else if (id == android.R.id.home){
-            if(showCart){
+        } else if (id == android.R.id.home) {
+            if (showCart) {
                 showCart = false;
                 finish();
                 return true;

@@ -1,21 +1,27 @@
 package com.example.myapp;
 
+import android.os.Bundle;
+import android.view.KeyEvent;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.os.Bundle;
-import android.view.KeyEvent;
-
 public class RegisterActivity extends AppCompatActivity {
 
     public static boolean onRestPassword = false;
+    public static boolean setSignUpFragment = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        addFragment(new SingInFragment(), false);
+        if(setSignUpFragment){
+            setSignUpFragment = false;
+            addFragment( new SingUpFragment(),false );
+        }else {
+            addFragment( new SingInFragment(), false );
+        }
 
     }
 
