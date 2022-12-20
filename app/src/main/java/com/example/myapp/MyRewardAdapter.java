@@ -13,15 +13,22 @@ import java.util.List;
 public class MyRewardAdapter extends RecyclerView.Adapter<MyRewardAdapter.Viewholder> {
 
     private List<RewardModel> rewardModelList;
+    private Boolean useMiniLayout = false;
 
-    public MyRewardAdapter(List<RewardModel> rewardModelList) {
+    public MyRewardAdapter(List<RewardModel> rewardModelList, Boolean useMiniLayout) {
         this.rewardModelList = rewardModelList;
+        this.useMiniLayout = useMiniLayout;
     }
 
     @NonNull
     @Override
     public MyRewardAdapter.Viewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from( parent.getContext() ).inflate( R.layout.rewards_item_layout, parent, false );
+        View view;
+        if (useMiniLayout) {
+            view = LayoutInflater.from( parent.getContext() ).inflate( R.layout.min_rewards_item_layout, parent, false );
+        } else {
+            view = LayoutInflater.from( parent.getContext() ).inflate( R.layout.rewards_item_layout, parent, false );
+        }
         return new Viewholder( view );
     }
 
@@ -30,7 +37,7 @@ public class MyRewardAdapter extends RecyclerView.Adapter<MyRewardAdapter.Viewho
         String title = rewardModelList.get( position ).getTitle();
         String date = rewardModelList.get( position ).getExpiryDate();
         String body = rewardModelList.get( position ).getCoupenBody();
-        holder.setData( title,date,body );
+        holder.setData( title, date, body );
     }
 
     @Override
@@ -55,6 +62,15 @@ public class MyRewardAdapter extends RecyclerView.Adapter<MyRewardAdapter.Viewho
             coupenTitle.setText( title );
             coupenExpiryDate.setText( date );
             coupenBody.setText( body );
+
+            if(useMiniLayout){
+                itemView.setOnClickListener( view -> {
+                   PRoductDEtailshActivity.coupenTitle.setText( title );
+                    PRoductDEtailshActivity.coupenExpiryDate.setText( date );
+                    PRoductDEtailshActivity.coupenBody.setText( body );
+                    PRoductDEtailshActivity.showDialogRecyclerView();
+                } );
+            }
         }
     }
 }

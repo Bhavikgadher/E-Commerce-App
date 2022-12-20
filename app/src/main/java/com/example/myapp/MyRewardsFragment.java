@@ -45,9 +45,11 @@ public class MyRewardsFragment extends Fragment {
         rewardModelList.add( new RewardModel( "Discount","till 2nd june 2023","GET 20% CASHBACK on any product above Rs.200/- and below Rs.3000/-." ) );
         rewardModelList.add( new RewardModel( "BUY 1 Get 2 Free ","till 2nd june 2023","GET 20% CASHBACK on any product above Rs.200/- and below Rs.3000/-." ) );
 
-        MyRewardAdapter myRewardAdapter = new MyRewardAdapter( rewardModelList );
+        MyRewardAdapter myRewardAdapter = new MyRewardAdapter( rewardModelList,false );
         rewardsRecyclerview.setAdapter( myRewardAdapter );
         myRewardAdapter.notifyDataSetChanged();
+
+
         return view;
     }
 }

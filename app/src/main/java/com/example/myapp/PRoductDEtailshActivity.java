@@ -2,6 +2,7 @@ package com.example.myapp;
 
 import static com.example.myapp.MainActivity.showCart;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -10,12 +11,16 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapp.databinding.ActivityProductDetailshBinding;
 import com.google.android.material.tabs.TabLayout;
@@ -29,13 +34,22 @@ public class PRoductDEtailshActivity extends AppCompatActivity {
     private static boolean ALREADY_ADDED_TO_WISHLIST = false;
     ProductDetailsAdapter productDetailsAdapter;
 
+    public static TextView coupenTitle;
+    public static TextView coupenExpiryDate;
+    public static TextView coupenBody;
+    private static RecyclerView coupensRecyclerView;
+    private static LinearLayout selectedCoupen;
+
+
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
         binding = DataBindingUtil.setContentView( this, R.layout.activity_product_detailsh );
         setSupportActionBar( binding.toolbar );
         getSupportActionBar().setDisplayShowTitleEnabled( false );
         getSupportActionBar().setDisplayHomeAsUpEnabled( true );
+
 
         List<Integer> productImages = new ArrayList<>();
         productImages.add( R.mipmap.ic_12_min );
@@ -85,13 +99,65 @@ public class PRoductDEtailshActivity extends AppCompatActivity {
                 }
             } );
         }
-        binding.buyNowBtn.setOnClickListener( new View.OnClickListener() {
+        binding.buyNowBtn.setOnClickListener( view -> {
+            Intent deliveryIntent = new Intent( PRoductDEtailshActivity.this, DeliveryActivity.class );
+            startActivity( deliveryIntent );
+        } );
+
+        //coupen Dialog
+        Dialog checkCoupenpriceDialog = new Dialog( PRoductDEtailshActivity.this );
+        checkCoupenpriceDialog.setContentView( R.layout.coupen_redeem_dialog );
+        checkCoupenpriceDialog.setCancelable( true );
+        checkCoupenpriceDialog.getWindow().setLayout( ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT );
+
+        ImageView toggleRecyclerView = checkCoupenpriceDialog.findViewById( R.id.toggle_coupen );
+        coupensRecyclerView = checkCoupenpriceDialog.findViewById( R.id.rv_coupns );
+        selectedCoupen = checkCoupenpriceDialog.findViewById( R.id.selected_coupen );
+        coupenTitle = checkCoupenpriceDialog.findViewById( R.id.coupen_title );
+        coupenExpiryDate = checkCoupenpriceDialog.findViewById( R.id.coupen_validity );
+        coupenBody = checkCoupenpriceDialog.findViewById( R.id.coupen_body );
+        TextView originalPrice = checkCoupenpriceDialog.findViewById( R.id.original_price );
+        TextView discountedPrice = checkCoupenpriceDialog.findViewById( R.id.discounted_price );
+
+        List<RewardModel> rewardModelList = new ArrayList<>();
+        rewardModelList.add( new RewardModel( "CashBack", "till 2nd june 2023", "GET 20% CASHBACK on any product above Rs.200/- and below Rs.3000/-." ) );
+        rewardModelList.add( new RewardModel( "Discount", "till 2nd june 2023", "GET 20% CASHBACK on any product above Rs.200/- and below Rs.3000/-." ) );
+        rewardModelList.add( new RewardModel( "BUY 1 Get 2 Free ", "till 2nd june 2023", "GET 20% CASHBACK on any product above Rs.200/- and below Rs.3000/-." ) );
+        rewardModelList.add( new RewardModel( "CashBack", "till 2nd june 2023", "GET 20% CASHBACK on any product above Rs.200/- and below Rs.3000/-." ) );
+        rewardModelList.add( new RewardModel( "Discount", "till 2nd june 2023", "GET 20% CASHBACK on any product above Rs.200/- and below Rs.3000/-." ) );
+        rewardModelList.add( new RewardModel( "BUY 1 Get 2 Free ", "till 2nd june 2023", "GET 20% CASHBACK on any product above Rs.200/- and below Rs.3000/-." ) );
+        rewardModelList.add( new RewardModel( "CashBack", "till 2nd june 2023", "GET 20% CASHBACK on any product above Rs.200/- and below Rs.3000/-." ) );
+        rewardModelList.add( new RewardModel( "Discount", "till 2nd june 2023", "GET 20% CASHBACK on any product above Rs.200/- and below Rs.3000/-." ) );
+        rewardModelList.add( new RewardModel( "BUY 1 Get 2 Free ", "till 2nd june 2023", "GET 20% CASHBACK on any product above Rs.200/- and below Rs.3000/-." ) );
+
+        MyRewardAdapter myRewardAdapter = new MyRewardAdapter( rewardModelList, true );
+        coupensRecyclerView.setAdapter( myRewardAdapter );
+        myRewardAdapter.notifyDataSetChanged();
+
+        toggleRecyclerView.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent deliveryIntent = new Intent( PRoductDEtailshActivity.this, DeliveryActivity.class );
-                startActivity( deliveryIntent );
+                showDialogRecyclerView();
             }
         } );
+        //coupen Dialog
+        binding.incContent.coupenRedemptionBtn.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                checkCoupenpriceDialog.show();
+            }
+        } );
+    }
+
+    public static void showDialogRecyclerView() {
+        if (coupensRecyclerView.getVisibility() == View.GONE) {
+            coupensRecyclerView.setVisibility( View.VISIBLE );
+            selectedCoupen.setVisibility( View.GONE );
+        } else {
+            coupensRecyclerView.setVisibility( View.GONE );
+            selectedCoupen.setVisibility( View.VISIBLE );
+        }
     }
 
     private void setRating(int starPosition) {
