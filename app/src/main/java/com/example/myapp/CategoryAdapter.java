@@ -1,6 +1,7 @@
 package com.example.myapp;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,14 +11,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
 
-    private List<CategoryModel> categoryModelList;
+    private List<CategoryModel> categoryModelList = new ArrayList<>();
 
-    public CategoryAdapter(List<CategoryModel> categoryModelList) {
-        this.categoryModelList = categoryModelList;
+    public CategoryAdapter() {
     }
 
 
@@ -29,10 +33,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CategoryAdapter.ViewHolder ViewHolder, int position) {
-//        String icon = categoryModelList.get(position).getCategoryIconLink();
-        String name = categoryModelList.get( position ).getCategoryName();
-        ViewHolder.setCategory( name,position );
+    public void onBindViewHolder(@NonNull CategoryAdapter.ViewHolder viewHolder, int position) {
+        viewHolder.bind(position);
     }
 
     @Override
@@ -40,8 +42,12 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         return categoryModelList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public void setData(ArrayList<CategoryModel> categoryModelList) {
+        this.categoryModelList =categoryModelList;
+        notifyDataSetChanged();
+    }
 
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView categoryIcon;
         private TextView categoryName;
 
@@ -52,15 +58,19 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
         }
 
-        private void setCategoryIcon() {
-//
-        }
+        public void bind(int position){
+            CategoryModel model = categoryModelList.get( position );
+            String icon = model.getCategoryIcon();
+            String name = model.getCategoryName();
 
-        private void setCategory(final String name,final int position) {
             categoryName.setText( name );
+            if (!icon.equals( "null" )) {
+                Log.e("LOG_LOG",icon);
+                Glide.with( itemView.getContext() ).load( icon ).apply( new RequestOptions().placeholder( R.drawable.ic_baseline_home_24 ) ).into( categoryIcon );
+            }
 
             itemView.setOnClickListener( view -> {
-                if(position != 0) {
+                if (position != 0) {
                     Intent categoryIntent = new Intent( itemView.getContext(), CategoryActivity.class );
                     categoryIntent.putExtra( "CategoryName", name );
                     itemView.getContext().startActivity( categoryIntent );

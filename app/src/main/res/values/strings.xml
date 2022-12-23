@@ -18,4 +18,6 @@
     <string name="psearch_">Search</string>
     <string name="lbl_open">OPEN</string>
     <string name="lbl_close">Close</string>
+    <string name="banner_id">banner_%1$d</string>
+    <string name="banner_id_background">banner_%1$d_background</string>
 </resources>

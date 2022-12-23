@@ -23,6 +23,7 @@ public class CategoryModel {
 
     public CategoryModel(String categoryName, String categoryIcon) {
         this.categoryName = categoryName;
-        CategoryIcon = categoryIcon;
+        this.CategoryIcon = categoryIcon;
     }
+
 }

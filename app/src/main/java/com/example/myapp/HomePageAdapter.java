@@ -2,6 +2,7 @@ package com.example.myapp;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -19,6 +20,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,14 +82,15 @@ public class HomePageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 ((BannerSliderViewholder) viewHolder).setBannerSliderViewPager2( sliderModelList );
                 break;
             case HomePageModel.STRIP_AD_BANNER:
-                int resource = homePageModelList.get( position ).getResource();
+                String resource = homePageModelList.get( position ).getResource();
                 String color = homePageModelList.get( position ).getBackgroundColor();
                 ((StripAdBannerViewHolder) viewHolder).setStripAd( resource, color );
                 break;
             case HomePageModel.HORIZONTAL_PRODUCT_VIEW:
+                String layoutColor = homePageModelList.get( position ).getBackgroundColor();
                 String horizontalTitle = homePageModelList.get( position ).getTitle();
                 List<HorizontalProductScrollModel> horizontalProductScrollModelList = homePageModelList.get( position ).getHorizontalProductScrollModelList();
-                ((HorizontalProductViewHolder) viewHolder).setHorizontalProductLayout( horizontalProductScrollModelList, horizontalTitle );
+                ((HorizontalProductViewHolder) viewHolder).setHorizontalProductLayout( horizontalProductScrollModelList, horizontalTitle ,layoutColor);
                 break;
             case HomePageModel.GRID_PRODUCT_VIEW:
                 String gridLayoutTitle = homePageModelList.get( position ).getTitle();
@@ -123,13 +128,13 @@ public class HomePageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 timer.cancel();
             }
             arrangedList = new ArrayList<>();
-            for (int i = 0; i<sliderModelList.size();i++){
-                arrangedList.add( i,sliderModelList.get( i ) );
+            for (int i = 0; i < sliderModelList.size(); i++) {
+                arrangedList.add( i, sliderModelList.get( i ) );
             }
-            arrangedList.add( 0,sliderModelList.get( sliderModelList.size()-2 ) );
-            arrangedList.add( 0,sliderModelList.get( sliderModelList.size()-1 ) );
-            arrangedList.add( sliderModelList.get( 0) );
-            arrangedList.add( sliderModelList.get( 1) );
+            arrangedList.add( 0, sliderModelList.get( sliderModelList.size() - 2 ) );
+            arrangedList.add( 0, sliderModelList.get( sliderModelList.size() - 1 ) );
+            arrangedList.add( sliderModelList.get( 0 ) );
+            arrangedList.add( sliderModelList.get( 1 ) );
 
             SliderAdapter sliderAdapter = new SliderAdapter( arrangedList );
             bannerSliderViewPager2.setAdapter( sliderAdapter );
@@ -216,27 +221,29 @@ public class HomePageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             stripAdContainer = itemView.findViewById( R.id.strip_ad_container );
         }
 
-        private void setStripAd(int resource, String color) {
-            stripAdImage.setImageResource( resource );
+        private void setStripAd(String resource, String color) {
+            Glide.with( itemView.getContext() ).load( resource ).apply( new RequestOptions().placeholder( R.drawable.ic_baseline_home_24 ) ).into( stripAdImage );
             stripAdContainer.setBackgroundColor( Color.parseColor( color ) );
         }
     }
 
     public class HorizontalProductViewHolder extends RecyclerView.ViewHolder {
-
+        private ConstraintLayout container;
         private TextView horizontalLayoutTitle;
         private Button horizontalLayoutViewAllBtn;
         private RecyclerView horizontalRecycleView;
 
         public HorizontalProductViewHolder(@NonNull View itemView) {
             super( itemView );
+            container = itemView.findViewById( R.id.container );
             horizontalLayoutTitle = itemView.findViewById( R.id.horizontal_scroll_layout_title );
             horizontalLayoutViewAllBtn = itemView.findViewById( R.id.horizontal_scroll_viewAll_btn );
             horizontalRecycleView = itemView.findViewById( R.id.horizontal_product_recyclerview );
             horizontalRecycleView.setRecycledViewPool( recycledViewPool );
         }
 
-        private void setHorizontalProductLayout(List<HorizontalProductScrollModel> horizontalProductScrollModelList, String title) {
+        private void setHorizontalProductLayout(List<HorizontalProductScrollModel> horizontalProductScrollModelList, String title, String color) {
+            container.setBackgroundTintList( ColorStateList.valueOf( Color.parseColor( color ) ) );
             horizontalLayoutTitle.setText( title );
             if (horizontalProductScrollModelList.size() > 8) {
                 horizontalLayoutViewAllBtn.setVisibility( View.VISIBLE );
@@ -282,7 +289,7 @@ public class HomePageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 TextView productColor = gridProductLayout.getChildAt( i ).findViewById( R.id.h_s_product_color );
                 TextView productPrice = gridProductLayout.getChildAt( i ).findViewById( R.id.h_s_product_price );
 
-                productImage.setImageResource( horizontalProductScrollModelList.get( i ).getProduceImage() );
+//                Glide.with( itemView.getContext() ).load( horizontalProductScrollModelList.g )
                 productTitle.setText( horizontalProductScrollModelList.get( i ).getProductTitle() );
                 productColor.setText( horizontalProductScrollModelList.get( i ).getProductColor() );
                 productPrice.setText( horizontalProductScrollModelList.get( i ).getProductPrice() );

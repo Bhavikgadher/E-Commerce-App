@@ -11,12 +11,15 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
 import java.util.List;
 
 public class SliderAdapter extends RecyclerView.Adapter<SliderAdapter.SliderViewHolder> {
     private final List<SliderModel> sliderModelList;
 
-    public SliderAdapter(List<SliderModel> sliderModelList){
+    public SliderAdapter(List<SliderModel> sliderModelList) {
         this.sliderModelList = sliderModelList;
     }
 
@@ -24,15 +27,15 @@ public class SliderAdapter extends RecyclerView.Adapter<SliderAdapter.SliderView
     @NonNull
     @Override
     public SliderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.slider_layout,parent,false);
-        ConstraintLayout bannerContainer = view.findViewById(R.id.banner_container);
-        bannerContainer.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(sliderModelList.get(viewType).getBackgroundColor())));
-        return new SliderViewHolder(view) ;
+        View view = LayoutInflater.from( parent.getContext() ).inflate( R.layout.slider_layout, parent, false );
+        ConstraintLayout bannerContainer = view.findViewById( R.id.banner_container );
+        bannerContainer.setBackgroundTintList( ColorStateList.valueOf( Color.parseColor( sliderModelList.get( viewType ).getBackgroundColor() ) ) );
+        return new SliderViewHolder( view );
     }
 
     @Override
     public void onBindViewHolder(@NonNull SliderViewHolder holder, int position) {
-        holder.bind(position);
+        holder.bind( position );
     }
 
     @Override
@@ -40,16 +43,20 @@ public class SliderAdapter extends RecyclerView.Adapter<SliderAdapter.SliderView
         return sliderModelList.size();
     }
 
-    public class SliderViewHolder extends RecyclerView.ViewHolder{
+    public class SliderViewHolder extends RecyclerView.ViewHolder {
         View itemView;
+
         public SliderViewHolder(@NonNull View itemView) {
-            super(itemView);
+            super( itemView );
             this.itemView = itemView;
         }
-        public void bind(int position){
-            SliderModel model = sliderModelList.get(position);
-            ImageView banner = itemView.findViewById(R.id.banner_slide);
-            banner.setImageResource(model.getBanner());
+
+        public void bind(int position) {
+            SliderModel model = sliderModelList.get( position );
+            ImageView banner = itemView.findViewById( R.id.banner_slide );
+
+            Glide.with( itemView.getContext() ).load( sliderModelList.get( position ).getBanner() ).apply( new RequestOptions().placeholder( R.drawable.ic_baseline_home_24 ) ).into( banner );
+
         }
     }
 

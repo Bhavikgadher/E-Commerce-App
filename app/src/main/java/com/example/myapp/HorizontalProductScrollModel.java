@@ -8,25 +8,38 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
 public class HorizontalProductScrollModel {
 
-    private int produceImage;
+    private String productID;
+    private String produceImage;
     private String productTitle;
     private String productColor;
     private String productPrice;
 
-    public HorizontalProductScrollModel(int produceImage, String productTitle, String productColor, String productPrice) {
+    public HorizontalProductScrollModel(String productID, String produceImage, String productTitle, String productColor, String productPrice) {
+        this.productID = productID;
         this.produceImage = produceImage;
         this.productTitle = productTitle;
         this.productColor = productColor;
         this.productPrice = productPrice;
     }
 
-    public int getProduceImage() {
+    public String getProductID() {
+        return productID;
+    }
+
+    public void setProductID(String productID) {
+        this.productID = productID;
+    }
+
+    public String getProduceImage() {
         return produceImage;
     }
 
-    public void setProduceImage(int produceImage) {
+    public void setProduceImage(String produceImage) {
         this.produceImage = produceImage;
     }
 
@@ -77,8 +90,9 @@ public class HorizontalProductScrollModel {
             } );
         }
 
-        void setProductImage(int resource) {
-            productImage.setImageResource(resource);
+
+        void setProductImage(String resource){
+            Glide.with(itemView.getContext()).load( resource ).apply( new RequestOptions().placeholder( R.drawable.ic_baseline_home_24 ) ).into(productImage);
         }
 
         void setProductTitle(String title) {

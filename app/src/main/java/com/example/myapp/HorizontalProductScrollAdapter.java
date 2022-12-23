@@ -26,7 +26,7 @@ public class HorizontalProductScrollAdapter extends RecyclerView.Adapter<Horizon
 
     @Override
     public void onBindViewHolder(@NonNull HorizontalProductScrollModel.ViewHolder holder, int position) {
-        int resource = horizontalProductScrollModelList.get(position).getProduceImage();
+        String resource = horizontalProductScrollModelList.get(position).getProduceImage();
         String title = horizontalProductScrollModelList.get(position).getProductTitle();
         String color = horizontalProductScrollModelList.get(position).getProductColor();
         String price = horizontalProductScrollModelList.get(position).getProductPrice();
@@ -35,8 +35,6 @@ public class HorizontalProductScrollAdapter extends RecyclerView.Adapter<Horizon
         holder.setProductTitle(title);
         holder.setProductColor(color);
         holder.setProductPrice(price);
-
-
 
     }
 

@@ -1,9 +1,19 @@
 package com.example.myapp.ui.home;
 
+import static com.example.myapp.utils.Constants.FB_BACKGROUND;
+import static com.example.myapp.utils.Constants.FB_COLLECTION_CATEGORIES;
+import static com.example.myapp.utils.Constants.FB_DOCUMENT_HOME;
+import static com.example.myapp.utils.Constants.FB_NO_OF_BANNERS;
+import static com.example.myapp.utils.Constants.FB_NO_OF_PRODUCTS;
+import static com.example.myapp.utils.Constants.FB_STRIP_AD_BANNER;
+import static com.example.myapp.utils.Constants.FB_SUB_COLLECTION_TD;
+import static com.example.myapp.utils.Constants.FB_VIEW_TYPE;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
@@ -18,6 +28,9 @@ import com.example.myapp.HorizontalProductScrollModel;
 import com.example.myapp.R;
 import com.example.myapp.SliderModel;
 import com.example.myapp.databinding.FragmentHomeBinding;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,29 +38,91 @@ import java.util.List;
 public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private HomeViewModel homeVM;
+    private HomePageAdapter adapter;
+    private FirebaseFirestore firebaseFirestore;
+
     public HomeFragment() {
     }
 
     private CategoryAdapter categoryAdapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false );
+        binding = DataBindingUtil.inflate( inflater, R.layout.fragment_home, container, false );
         homeVM = new ViewModelProvider( this ).get( HomeViewModel.class );
-
-        categoryAdapter = new CategoryAdapter( provideFakeCategoryList() );
+        ///////////categorise///////////
+        categoryAdapter = new CategoryAdapter();
         binding.categoryRecyclerview.setAdapter( categoryAdapter );
+        firebaseFirestore = FirebaseFirestore.getInstance();
+        firebaseFirestore.collection( "CATEGORIES" ).orderBy( "index" ).get().addOnCompleteListener( task ->
+        {
+            ArrayList<CategoryModel> categoryModelList = new ArrayList<>();
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                    categoryModelList.add( new CategoryModel( documentSnapshot.get( "categoryName" ).toString(),
+                            documentSnapshot.get( "icon" ).toString() ) );
+                }
+            } else {
+                String error = task.getException().getMessage();
+                Toast.makeText( getContext(), error, Toast.LENGTH_SHORT ).show();
+            }
+            categoryAdapter.setData( categoryModelList );
+        } );
 
-
+        ///////////categorise///////////
+        ///////////Home Page///////////
         List<HomePageModel> homePageModelList = new ArrayList<>();
-        homePageModelList.add( new HomePageModel( 0, provideFakeSliderList() ) );
-        homePageModelList.add( new HomePageModel( 1, R.mipmap.demo_slide, "#FFFFFFFF" ) );
-        homePageModelList.add( new HomePageModel( 2, "Deals Of The Day", provideFakeProductList() ) );
-        homePageModelList.add( new HomePageModel( 3, "Deals Of The Day", provideFakeProductList() ) );
-
-        HomePageAdapter adapter = new HomePageAdapter( homePageModelList );
+        adapter = new HomePageAdapter( homePageModelList );
         binding.homePageRecyclerview.setAdapter( adapter );
 
-
+        DocumentReference homeDR = firebaseFirestore.collection( FB_COLLECTION_CATEGORIES ).document( FB_DOCUMENT_HOME );
+        homeDR.collection( FB_SUB_COLLECTION_TD ).orderBy( "index" ).get().addOnCompleteListener( task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                    Long viewType = documentSnapshot.get(FB_VIEW_TYPE,Long.class);
+                    if (viewType!=null){
+                        if (viewType == 0) {
+                            Long noOfBanners = documentSnapshot.get(FB_NO_OF_BANNERS,Long.class);
+                            if (noOfBanners!=null) {
+                                List<SliderModel> sliderModelList = new ArrayList<>();
+                                for (int i = 1; i <= noOfBanners; i++) {
+                                    String banner = documentSnapshot.get( String.format( getString(R.string.banner_id),i ),String.class );
+                                    String bannerBackground = documentSnapshot.get( String.format( getString(R.string.banner_id_background),i ),String.class );
+                                    if (banner != null && bannerBackground != null) {
+                                        sliderModelList.add( new SliderModel( banner, bannerBackground ) );
+                                    }
+                                }
+                                homePageModelList.add( new HomePageModel( 0, sliderModelList ) );
+                            }
+                        } else if (viewType == 1) {
+                            String stripAdBanner = documentSnapshot.get(FB_STRIP_AD_BANNER,String.class);
+                            String background = documentSnapshot.get(FB_BACKGROUND,String.class);
+                            if (stripAdBanner != null && background != null) {
+                                homePageModelList.add( new HomePageModel( 1, stripAdBanner, background ) );
+                            }
+                        } else if (viewType == 2) {
+                            List<HorizontalProductScrollModel> horizontalProductScrollModelList = new ArrayList<>();
+                            Long noOfProducts = documentSnapshot.get(FB_NO_OF_PRODUCTS,Long.class);
+                            for (long i = 1; i <= noOfProducts; i++) {
+                                horizontalProductScrollModelList.add(
+                                        new HorizontalProductScrollModel( documentSnapshot.get( "product_ID_" + i ).toString(),
+                                        documentSnapshot.get( "product_image_" + i ).toString(),
+                                        documentSnapshot.get( "product_title_" + i ).toString(),
+                                        documentSnapshot.get( "product_subtitle_" + i ).toString(),
+                                        documentSnapshot.get( "product_price_" + i ).toString() )
+                                );
+                            }
+                            homePageModelList.add( new HomePageModel( 2, documentSnapshot.get( "layout_title" ).toString(),
+                                    documentSnapshot.get( "background" ).toString(), horizontalProductScrollModelList ) );
+                        } else if (viewType == 3) {
+                        }
+                    }
+                }
+                adapter.notifyDataSetChanged();
+            } else {
+                String error = task.getException().getMessage();
+                Toast.makeText( getContext(), error, Toast.LENGTH_SHORT ).show();
+            }
+        } );
         return binding.getRoot();
     }
 
@@ -55,43 +130,5 @@ public class HomeFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-    }
-
-    public List<CategoryModel> provideFakeCategoryList(){
-        List<CategoryModel> categoryModelList = new ArrayList<>();
-        categoryModelList.add( new CategoryModel( "Home", "link" ) );
-        categoryModelList.add( new CategoryModel( "Electronics", "link" ) );
-        categoryModelList.add( new CategoryModel( "Appliances", "link" ) );
-        categoryModelList.add( new CategoryModel( "Furniture", "link" ) );
-        categoryModelList.add( new CategoryModel( "Fashion", "link" ) );
-        categoryModelList.add( new CategoryModel( "Toys", "link" ) );
-        categoryModelList.add( new CategoryModel( "Wall Arts", "link" ) );
-        categoryModelList.add( new CategoryModel( "Book", "link" ) );
-        return categoryModelList;
-    }
-    public List<SliderModel> provideFakeSliderList(){
-        List<SliderModel> sliderModelList = new ArrayList<>();
-        sliderModelList.add( new SliderModel( R.drawable.ic_baseline_mark_email_read_24, "#0320FF" ) );
-        sliderModelList.add( new SliderModel( R.drawable.ic_baseline_email_24, "#0320FF" ) );
-        sliderModelList.add( new SliderModel( R.drawable.ic_baseline_add_24, "#0320FF" ) );
-        sliderModelList.add( new SliderModel( R.mipmap.demo_slide, "#0320FF" ) );
-        sliderModelList.add( new SliderModel( R.drawable.ic_baseline_search_24, "#0320FF" ) );
-        sliderModelList.add( new SliderModel( R.drawable.ic_baseline_close_24, "#0320FF" ) );
-        sliderModelList.add( new SliderModel( R.drawable.ic_menu_camera, "#0320FF" ) );
-        return sliderModelList;
-    }
-
-    public List<HorizontalProductScrollModel> provideFakeProductList(){
-        List<HorizontalProductScrollModel> productList = new ArrayList<>();
-        productList.add( new HorizontalProductScrollModel( R.drawable.ic_phone_iphone_24, "iphone x", "red", "Rs.24000/-" ) );
-        productList.add( new HorizontalProductScrollModel( R.drawable.ic_black_iphone_24, "iphone", "black", "Rs.24000/-" ) );
-        productList.add( new HorizontalProductScrollModel( R.drawable.ic_baseline_phone_iphone_24, "iphone11", "blue", "Rs.24000/-" ) );
-        productList.add( new HorizontalProductScrollModel( R.drawable.ic_green_iphone_24, "iphone12", "green", "Rs.24000/-" ) );
-        productList.add( new HorizontalProductScrollModel( R.drawable.ic_phone_iphone_24, "iphone11min", "blueBlack", "Rs.24000/-" ) );
-        productList.add( new HorizontalProductScrollModel( R.drawable.ic_baseline_power_settings_new_24, "iphone13", "yellow", "Rs.24000/-" ) );
-        productList.add( new HorizontalProductScrollModel( R.drawable.ic_baseline_favorite_24, "iphone14", "1blue", "Rs.24000/-" ) );
-        productList.add( new HorizontalProductScrollModel( R.drawable.ic_baseline_home_24, "iphone11pro", "pink", "Rs.24000/-" ) );
-        productList.add( new HorizontalProductScrollModel( R.drawable.ic_phone_iphone_24, "iphone11min", "blueBlack", "Rs.24000/-" ) );
-        return productList;
     }
 }
