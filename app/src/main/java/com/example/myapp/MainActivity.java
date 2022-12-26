@@ -62,8 +62,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             actionBarDrawerToggle.syncState();
             setFragment( new HomeFragment() );
         }
-
-
     }
 
     @Override

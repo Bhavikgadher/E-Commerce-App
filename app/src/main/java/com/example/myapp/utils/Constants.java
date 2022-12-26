@@ -11,6 +11,11 @@ public class Constants {
     public static String FB_NO_OF_PRODUCTS = "no_of_products";
     public static String FB_STRIP_AD_BANNER = "strip_ad_banner";
     public static String FB_BACKGROUND = "background";
+
+
+    public static String FB_PRODUCT_IMAGE = "product_image_";
+
+
 }
 
 

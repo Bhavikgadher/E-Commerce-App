@@ -21,7 +21,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
     private List<CategoryModel> categoryModelList = new ArrayList<>();
 
-    public CategoryAdapter() {
+    public CategoryAdapter(ArrayList<CategoryModel> categoryModelList) {
     }
 
 

@@ -90,12 +90,13 @@ public class HomePageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 String layoutColor = homePageModelList.get( position ).getBackgroundColor();
                 String horizontalTitle = homePageModelList.get( position ).getTitle();
                 List<HorizontalProductScrollModel> horizontalProductScrollModelList = homePageModelList.get( position ).getHorizontalProductScrollModelList();
-                ((HorizontalProductViewHolder) viewHolder).setHorizontalProductLayout( horizontalProductScrollModelList, horizontalTitle ,layoutColor);
+                ((HorizontalProductViewHolder) viewHolder).setHorizontalProductLayout( horizontalProductScrollModelList, horizontalTitle, layoutColor );
                 break;
             case HomePageModel.GRID_PRODUCT_VIEW:
+                String gridLayoutcolor = homePageModelList.get( position ).getBackgroundColor();
                 String gridLayoutTitle = homePageModelList.get( position ).getTitle();
                 List<HorizontalProductScrollModel> gridProductScrollModelList = homePageModelList.get( position ).getHorizontalProductScrollModelList();
-                ((GridProductViewHolder) viewHolder).setGridProductLayout( gridProductScrollModelList, gridLayoutTitle );
+                ((GridProductViewHolder) viewHolder).setGridProductLayout( gridProductScrollModelList, gridLayoutTitle,gridLayoutcolor );
                 break;
             default:
                 return;
@@ -235,7 +236,7 @@ public class HomePageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         public HorizontalProductViewHolder(@NonNull View itemView) {
             super( itemView );
-            container = itemView.findViewById( R.id.container );
+            container = itemView.findViewById( R.id.gird_container );
             horizontalLayoutTitle = itemView.findViewById( R.id.horizontal_scroll_layout_title );
             horizontalLayoutViewAllBtn = itemView.findViewById( R.id.horizontal_scroll_viewAll_btn );
             horizontalRecycleView = itemView.findViewById( R.id.horizontal_product_recyclerview );
@@ -269,18 +270,21 @@ public class HomePageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public class GridProductViewHolder extends RecyclerView.ViewHolder {
 
+        private ConstraintLayout container;
         private TextView gridLayoutTitle;
         private Button gridLayoutViewAllBtn;
         private GridLayout gridProductLayout;
 
         public GridProductViewHolder(@NonNull View itemView) {
             super( itemView );
+            container = itemView.findViewById( R.id.gird_container );
             gridLayoutTitle = itemView.findViewById( R.id.grid_product_layout_title );
             gridLayoutViewAllBtn = itemView.findViewById( R.id.grid_product_layout_viewall_btn );
             gridProductLayout = itemView.findViewById( R.id.grid_layout );
         }
 
-        private void setGridProductLayout(List<HorizontalProductScrollModel> horizontalProductScrollModelList, String title) {
+        private void setGridProductLayout(List<HorizontalProductScrollModel> horizontalProductScrollModelList, String title,String color) {
+            container.setBackgroundTintList( ColorStateList.valueOf( Color.parseColor( color ) ) );
             gridLayoutTitle.setText( title );
 
             for (int i = 0; i < 4; i++) {
@@ -289,29 +293,23 @@ public class HomePageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 TextView productColor = gridProductLayout.getChildAt( i ).findViewById( R.id.h_s_product_color );
                 TextView productPrice = gridProductLayout.getChildAt( i ).findViewById( R.id.h_s_product_price );
 
-//                Glide.with( itemView.getContext() ).load( horizontalProductScrollModelList.g )
+                Glide.with( itemView.getContext() ).load( horizontalProductScrollModelList.get( i ).getProduceImage() ).apply( new RequestOptions().placeholder( R.drawable.ic_baseline_home_24 ) ).into( productImage );
                 productTitle.setText( horizontalProductScrollModelList.get( i ).getProductTitle() );
                 productColor.setText( horizontalProductScrollModelList.get( i ).getProductColor() );
-                productPrice.setText( horizontalProductScrollModelList.get( i ).getProductPrice() );
+                productPrice.setText("Rs." + horizontalProductScrollModelList.get( i ).getProductPrice() + "/-" );
                 gridProductLayout.getChildAt( i ).setBackgroundColor( Color.parseColor( "#ffffff" ) );
-                gridProductLayout.getChildAt( i ).setOnClickListener( new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent productDetailsIntent = new Intent( itemView.getContext(), PRoductDEtailshActivity.class );
-                        itemView.getContext().startActivity( productDetailsIntent );
-                    }
+                gridProductLayout.getChildAt( i ).setOnClickListener( view -> {
+                    Intent productDetailsIntent = new Intent( itemView.getContext(), PRoductDEtailshActivity.class );
+                    itemView.getContext().startActivity( productDetailsIntent );
                 } );
 
             }
-
-
-            gridLayoutViewAllBtn.setOnClickListener( new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent viewAllIntent = new Intent( itemView.getContext(), ViewAllActivity.class );
-                    viewAllIntent.putExtra( "layout_code", 1 );
-                    itemView.getContext().startActivity( viewAllIntent );
-                }
+            gridLayoutViewAllBtn.setOnClickListener( view -> {
+                ViewAllActivity.productList = horizontalProductScrollModelList;
+                Intent viewAllIntent = new Intent( itemView.getContext(), ViewAllActivity.class );
+                viewAllIntent.putExtra( "layout_code", 1 );
+                viewAllIntent.putExtra( "title",title );
+                itemView.getContext().startActivity( viewAllIntent );
             } );
 
         }

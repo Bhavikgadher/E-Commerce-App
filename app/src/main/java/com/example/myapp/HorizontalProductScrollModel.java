@@ -103,7 +103,7 @@ public class HorizontalProductScrollModel {
             productColor.setText(color);
         }
         void  setProductPrice(String price){
-            productPrice.setText(price);
+            productPrice.setText("Rs." +price + "/-");
         }
     }
 }

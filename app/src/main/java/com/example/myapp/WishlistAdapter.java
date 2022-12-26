@@ -33,14 +33,14 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull WishlistAdapter.ViewHolder holder, int position) {
-        int resourece = wishlistModelList.get( position ).getProductImage();
+        String resourece = wishlistModelList.get( position ).getProductImage();
         String title = wishlistModelList.get( position ).getProductTitle();
-        int freeCopens = wishlistModelList.get( position ).getFreeCoupens();
+        long freeCopens = wishlistModelList.get( position ).getFreeCoupens();
         String rating = wishlistModelList.get( position ).getRating();
-        int totalRatings = wishlistModelList.get( position ).getTotalRating();
+        long totalRatings = wishlistModelList.get( position ).getTotalRating();
         String productPrice = wishlistModelList.get( position ).getProductPrice();
         String cuttedPrice = wishlistModelList.get( position ).getCuttedPrice();
-        String paymentMethod = wishlistModelList.get( position ).getPaymentMethod();
+        boolean paymentMethod = wishlistModelList.get( position ).getPaymentMethod();
         holder.setData( resourece, title, freeCopens, rating, totalRatings, productPrice, cuttedPrice, paymentMethod );
     }
 

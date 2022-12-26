@@ -16,6 +16,7 @@ import java.util.List;
 public class ViewAllActivity extends AppCompatActivity {
 
     private ActivityViewAllBinding binding;
+    public static List<HorizontalProductScrollModel> productList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +24,7 @@ public class ViewAllActivity extends AppCompatActivity {
         binding = DataBindingUtil.setContentView( this, R.layout.activity_view_all );
         setSupportActionBar( binding.toolbar );
         getSupportActionBar().setDisplayShowTitleEnabled( true );
-        getSupportActionBar().setTitle( "Deals Of The Day" );
+        getSupportActionBar().setTitle( getIntent().getStringExtra( "title" ));
         getSupportActionBar().setDisplayHomeAsUpEnabled( true );
 
         int layout_code = getIntent().getIntExtra( "layout_code", -1 );
@@ -54,25 +55,7 @@ public class ViewAllActivity extends AppCompatActivity {
         } else if (layout_code == 1) {
             binding.gridView.setVisibility( View.VISIBLE );
 
-            List<HorizontalProductScrollModel> productList = new ArrayList<>();
 //            productList.add( new HorizontalProductScrollModel( R.drawable.ic_phone_iphone_24, "iphone x", "red", "Rs.24000/-" ) );
-//            productList.add( new HorizontalProductScrollModel( R.drawable.ic_black_iphone_24, "iphone", "black", "Rs.24000/-" ) );
-//            productList.add( new HorizontalProductScrollModel( R.drawable.ic_baseline_phone_iphone_24, "iphone11", "blue", "Rs.24000/-" ) );
-//            productList.add( new HorizontalProductScrollModel( R.drawable.ic_green_iphone_24, "iphone12", "green", "Rs.24000/-" ) );
-//            productList.add( new HorizontalProductScrollModel( R.drawable.ic_phone_iphone_24, "iphone11min", "blueBlack", "Rs.24000/-" ) );
-//            productList.add( new HorizontalProductScrollModel( R.drawable.ic_baseline_power_settings_new_24, "iphone13", "yellow", "Rs.24000/-" ) );
-//            productList.add( new HorizontalProductScrollModel( R.drawable.ic_baseline_favorite_24, "iphone14", "1blue", "Rs.24000/-" ) );
-//            productList.add( new HorizontalProductScrollModel( R.drawable.ic_baseline_home_24, "iphone11pro", "pink", "Rs.24000/-" ) );
-//            productList.add( new HorizontalProductScrollModel( R.drawable.ic_phone_iphone_24, "iphone11min", "blueBlack", "Rs.24000/-" ) );
-//            productList.add( new HorizontalProductScrollModel( R.drawable.ic_phone_iphone_24, "iphone x", "red", "Rs.24000/-" ) );
-//            productList.add( new HorizontalProductScrollModel( R.drawable.ic_black_iphone_24, "iphone", "black", "Rs.24000/-" ) );
-//            productList.add( new HorizontalProductScrollModel( R.drawable.ic_baseline_phone_iphone_24, "iphone11", "blue", "Rs.24000/-" ) );
-//            productList.add( new HorizontalProductScrollModel( R.drawable.ic_green_iphone_24, "iphone12", "green", "Rs.24000/-" ) );
-//            productList.add( new HorizontalProductScrollModel( R.drawable.ic_phone_iphone_24, "iphone11min", "blueBlack", "Rs.24000/-" ) );
-//            productList.add( new HorizontalProductScrollModel( R.drawable.ic_baseline_power_settings_new_24, "iphone13", "yellow", "Rs.24000/-" ) );
-//            productList.add( new HorizontalProductScrollModel( R.drawable.ic_baseline_favorite_24, "iphone14", "1blue", "Rs.24000/-" ) );
-//            productList.add( new HorizontalProductScrollModel( R.drawable.ic_baseline_home_24, "iphone11pro", "pink", "Rs.24000/-" ) );
-//            productList.add( new HorizontalProductScrollModel( R.drawable.ic_phone_iphone_24, "iphone11min", "blueBlack", "Rs.24000/-" ) );
             GridProductLayoutAdapter gridProductLayoutAdapter = new GridProductLayoutAdapter( productList );
             binding.gridView.setAdapter( gridProductLayoutAdapter );
             gridProductLayoutAdapter.notifyDataSetChanged();

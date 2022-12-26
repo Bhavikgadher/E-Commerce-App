@@ -9,6 +9,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
 import java.util.List;
 
 public class GridProductLayoutAdapter extends BaseAdapter {
@@ -42,12 +45,9 @@ public class GridProductLayoutAdapter extends BaseAdapter {
             view.setElevation(0);
             view.setBackgroundColor(Color.parseColor("#ffffff"));
 
-            view.setOnClickListener( new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent productDetailsIntent = new Intent(viewGroup.getContext(),PRoductDEtailshActivity.class);
-                    viewGroup.getContext().startActivity( productDetailsIntent );
-                }
+            view.setOnClickListener( view1 -> {
+                Intent productDetailsIntent = new Intent(viewGroup.getContext(),PRoductDEtailshActivity.class);
+                viewGroup.getContext().startActivity( productDetailsIntent );
             } );
 
             ImageView productImage = view.findViewById(R.id.h_s_product_image);
@@ -55,10 +55,10 @@ public class GridProductLayoutAdapter extends BaseAdapter {
             TextView productColor = view.findViewById(R.id.h_s_product_color);
             TextView productPrice = view.findViewById(R.id.h_s_product_price);
 
-//            productImage.setImageResource(horizontalProductScrollModelList.get(i).getProduceImage());
+            Glide.with(viewGroup.getContext()).load(horizontalProductScrollModelList.get(i).getProduceImage()).apply( new RequestOptions().placeholder( R.drawable.ic_baseline_home_24 ) ).into( productImage );
             productTitle.setText(horizontalProductScrollModelList.get(i).getProductTitle());
             productColor.setText(horizontalProductScrollModelList.get(i).getProductColor());
-            productPrice.setText(horizontalProductScrollModelList.get(i).getProductPrice());
+            productPrice.setText("Rs." + horizontalProductScrollModelList.get(i).getProductPrice() + "/-");
         } else {
             view = convertView;
         }
