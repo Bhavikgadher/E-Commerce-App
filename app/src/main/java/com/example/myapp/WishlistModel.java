@@ -9,9 +9,9 @@ public class WishlistModel {
     private long totalRating;
     private String productPrice;
     private String cuttedPrice;
-    private boolean COD;
+    private Class<Boolean> COD;
 
-    public WishlistModel(String productImage, String productTitle, long freeCoupens, String rating, long totalRating, String productPrice, String cuttedPrice, boolean COD) {
+    public WishlistModel(String productImage, String productTitle, Long freeCoupens, String rating, Long totalRating, String productPrice, String cuttedPrice, Object o, Class<Boolean> COD) {
         this.productImage = productImage;
         this.productTitle = productTitle;
         this.freeCoupens = freeCoupens;
@@ -78,11 +78,11 @@ public class WishlistModel {
         this.cuttedPrice = cuttedPrice;
     }
 
-    public boolean isCOD() {
+    public Class<Boolean> getCOD() {
         return COD;
     }
 
-    public void setCOD(boolean COD) {
+    public void setCOD(Class<Boolean> COD) {
         this.COD = COD;
     }
 }
