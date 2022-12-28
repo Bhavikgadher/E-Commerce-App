@@ -43,7 +43,7 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHo
         long totalRatings = wishlistModelList.get( position ).getTotalRating();
         String productPrice = wishlistModelList.get( position ).getProductPrice();
         String cuttedPrice = wishlistModelList.get( position ).getCuttedPrice();
-        boolean paymentMethod = wishlistModelList.get( position ).isCOD();
+        Class<Boolean> paymentMethod = wishlistModelList.get( position ).getCOD();
         holder.setData( resourece, title, freeCopens, rating, totalRatings, productPrice, cuttedPrice, paymentMethod );
     }
 
@@ -83,7 +83,7 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHo
             deleteBtn = itemView.findViewById( R.id.delete_btn );
         }
 
-        private void setData(String resource, String title, long freeCopensNo, String averageRate, long totalRatingsNo, String price, String cuttedPriceValue, boolean COD) {
+        private void setData(String resource, String title, long freeCopensNo, String averageRate, long totalRatingsNo, String price, String cuttedPriceValue, Class<Boolean> cod) {
             Glide.with( itemView.getContext() ).load( resource ).apply( new RequestOptions().placeholder( R.drawable.ic_baseline_home_24 ) ).into( productImage );
             productTitle.setText( title );
             if (freeCopensNo != 0) {
@@ -101,7 +101,7 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.ViewHo
             totalRatings.setText("(" + totalRatingsNo + ") ratings" );
             productPrice.setText("Rs" + price + "/-" );
             cuttedPrice.setText( "Rs" + cuttedPriceValue + "/-" );
-            if(COD){
+            if(true){
                 paymentMethod.setVisibility( View.VISIBLE );
             }else {
                 paymentMethod.setVisibility( View.INVISIBLE );

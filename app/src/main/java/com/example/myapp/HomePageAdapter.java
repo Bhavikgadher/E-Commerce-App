@@ -32,12 +32,17 @@ import java.util.TimerTask;
 @SuppressLint("ViewConstructor")
 public class HomePageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private final List<HomePageModel> homePageModelList;
+    private List<HomePageModel> homePageModelList;
     private RecyclerView.RecycledViewPool recycledViewPool;
 
     public HomePageAdapter(List<HomePageModel> homePageModelList) {
         this.homePageModelList = homePageModelList;
         recycledViewPool = new RecyclerView.RecycledViewPool();
+    }
+
+    public void setData(List<HomePageModel> homePageModelList){
+        this.homePageModelList = homePageModelList;
+        notifyDataSetChanged();
     }
 
     public int getItemViewType(int position) {

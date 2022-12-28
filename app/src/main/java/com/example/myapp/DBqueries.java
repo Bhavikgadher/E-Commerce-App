@@ -5,7 +5,6 @@ import static com.example.myapp.utils.Constants.FB_BACKGROUND;
 import static com.example.myapp.utils.Constants.FB_COD_;
 import static com.example.myapp.utils.Constants.FB_COLLECTION_CATEGORIES;
 import static com.example.myapp.utils.Constants.FB_CUTTED_PRICE_;
-import static com.example.myapp.utils.Constants.FB_DOCUMENT_HOME;
 import static com.example.myapp.utils.Constants.FB_FREE_COUPENS_;
 import static com.example.myapp.utils.Constants.FB_NO_OF_BANNERS;
 import static com.example.myapp.utils.Constants.FB_NO_OF_PRODUCTS;
@@ -22,7 +21,6 @@ import static com.example.myapp.utils.Constants.FB_TOTAL_RATINGS_;
 import static com.example.myapp.utils.Constants.FB_VIEW_TYPE;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.firebase.firestore.DocumentReference;
@@ -35,29 +33,28 @@ import java.util.List;
 public class DBqueries {
 
     public static FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-    public static ArrayList<CategoryModel> categoryModelList = new ArrayList<>();
-    public static List<HomePageModel> homePageModelList = new ArrayList<>();
+    public static List<CategoryModel> categoryModelList = new ArrayList<>();
+    public static List<List<HomePageModel>> lists = new ArrayList<>();
+    public static List<String> loadedCategoriesNames = new ArrayList<>();
 
     public static void loadCategories(final CategoryAdapter categoryAdapter, final Context context) {
-        firebaseFirestore.collection( "CATEGORIES" ).orderBy( "index" ).get().addOnCompleteListener( task ->
+        firebaseFirestore.collection( FB_COLLECTION_CATEGORIES ).orderBy( "index" ).get().addOnCompleteListener( task ->
         {
             if (task.isSuccessful()) {
-                Log.e( "flatu", "log" );
                 for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
                     categoryModelList.add( new CategoryModel( documentSnapshot.get( "categoryName" ).toString(),
                             documentSnapshot.get( "icon" ).toString() ) );
                 }
-                categoryAdapter.notifyDataSetChanged();
             } else {
                 String error = task.getException().getMessage();
                 Toast.makeText( context, error, Toast.LENGTH_SHORT ).show();
             }
-            categoryAdapter.setData( categoryModelList );
+            categoryAdapter.setData( (ArrayList<CategoryModel>) categoryModelList );
         } );
     }
 
-    public static void loadFragmentData(final HomePageAdapter adapter, final Context context) {
-        DocumentReference homeDR = firebaseFirestore.collection( FB_COLLECTION_CATEGORIES ).document( FB_DOCUMENT_HOME );
+    public static void loadFragmentData(final HomePageAdapter adapter, final Context context, final int index, String categoryName) {
+        DocumentReference homeDR = firebaseFirestore.collection( FB_COLLECTION_CATEGORIES ).document( categoryName.toUpperCase() );
         homeDR.collection( FB_SUB_COLLECTION_TD ).orderBy( "index" ).get().addOnCompleteListener( task -> {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
@@ -76,7 +73,7 @@ public class DBqueries {
                                         sliderModelList.add( new SliderModel( banner, bannerBackground ) );
                                     }
                                 }
-                                homePageModelList.add( new HomePageModel( 0, sliderModelList ) );
+                                lists.get( index ).add( new HomePageModel( 0, sliderModelList ) );
                             }
                         }
                         //if view type is 1 then inflate view for strip ad banners
@@ -84,7 +81,7 @@ public class DBqueries {
                             String stripAdBanner = documentSnapshot.get( FB_STRIP_AD_BANNER, String.class );
                             String background = documentSnapshot.get( FB_BACKGROUND, String.class );
                             if (stripAdBanner != null && background != null) {
-                                homePageModelList.add( new HomePageModel( 1, stripAdBanner, background ) );
+                                lists.get( index ).add( new HomePageModel( 1, stripAdBanner, background ) );
                             }
                         }
                         //if view type is 2 then inflate horizontal list view for products
@@ -112,7 +109,7 @@ public class DBqueries {
                                                 documentSnapshot.get( FB_CUTTED_PRICE_ + i, String.class ),
                                                 documentSnapshot.get( FB_COD_ + i ), Boolean.class ) );
                             }
-                            homePageModelList.add( new HomePageModel( 2, documentSnapshot.get( "layout_title" ).toString(),
+                            lists.get( index ).add( new HomePageModel( 2, documentSnapshot.get( "layout_title" ).toString(),
                                     documentSnapshot.get( "layout_background" ).toString(), horizontalProductScrollModelList, viewAllProductList ) );
                         }
                         //if view type is 3 then inflate grid list view for products
@@ -128,12 +125,12 @@ public class DBqueries {
                                                 documentSnapshot.get( "product_price_" + i ).toString() )
                                 );
                             }
-                            homePageModelList.add( new HomePageModel( 3, documentSnapshot.get( "layout_title" ).toString(),
+                            lists.get( index ).add( new HomePageModel( 3, documentSnapshot.get( "layout_title" ).toString(),
                                     documentSnapshot.get( "background" ).toString(), GridLayoutModelList ) );
                         }
                     }
                 }
-                adapter.notifyDataSetChanged();
+                adapter.setData( lists.get( index ) );
             } else {
                 String error = task.getException().getMessage();
                 Toast.makeText( context, error, Toast.LENGTH_SHORT ).show();

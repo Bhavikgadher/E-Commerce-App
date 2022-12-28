@@ -1,5 +1,9 @@
 package com.example.myapp;
 
+import static com.example.myapp.DBqueries.lists;
+import static com.example.myapp.DBqueries.loadFragmentData;
+import static com.example.myapp.DBqueries.loadedCategoriesNames;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,28 +16,46 @@ import androidx.databinding.DataBindingUtil;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.myapp.databinding.ActivityMainBinding;
+import com.example.myapp.databinding.ActivityCategoryBinding;
 
-import java.util.Objects;
+import java.util.ArrayList;
 
 public class CategoryActivity extends AppCompatActivity {
-    private ActivityMainBinding binding;
+    private ActivityCategoryBinding binding;
     private NavHostFragment navHostFragment;
     private NavController navController;
 
+    private HomePageAdapter adapter;
 
     @SuppressLint({"MissingInflatedId", "NotifyDataSetChanged"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
-        setContentView( R.layout.activity_category );
-
-        binding = DataBindingUtil.setContentView( this, R.layout.activity_main );
-        setSupportActionBar( binding.appBarMain.toolbar );
-        Objects.requireNonNull( getSupportActionBar() ).setDisplayShowTitleEnabled( true );
+        binding = DataBindingUtil.setContentView( this, R.layout.activity_category );
+        setSupportActionBar( binding.toolbar );
+        getSupportActionBar().setDisplayShowTitleEnabled( true );
         String title = getIntent().getStringExtra( "CategoryName" );
         getSupportActionBar().setTitle( title );
         getSupportActionBar().setDisplayShowTitleEnabled( true );
+
+
+        int listPosition = 0;
+        for (int i = 0; i < loadedCategoriesNames.size(); i++) {
+            if (loadedCategoriesNames.get( i ).equals( title.toUpperCase() )) {
+                listPosition = i;
+            }
+        }
+        if (listPosition == 0) {
+            loadedCategoriesNames.add( title.toUpperCase() );
+            lists.add( new ArrayList<HomePageModel>() );
+            adapter = new HomePageAdapter( lists.get( loadedCategoriesNames.size() - 1 ) );
+            loadFragmentData( adapter, this, loadedCategoriesNames.size() - 1, title );
+        } else {
+            adapter = new HomePageAdapter( lists.get( listPosition ) );
+        }
+        binding.categoryRecylerview.setAdapter( adapter );
+        adapter.notifyDataSetChanged();
+
 
 //        ////banner code
 //
@@ -86,8 +108,7 @@ public class CategoryActivity extends AppCompatActivity {
         if (id == R.id.main_search_icon) {
             Log.e( "LOG_LOG", "main_search_icon" );
             return true;
-        }
-        else if (id == android.R.id.home){
+        } else if (id == android.R.id.home) {
             finish();
             return true;
         }
