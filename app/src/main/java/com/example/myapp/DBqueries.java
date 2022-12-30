@@ -23,6 +23,9 @@ import static com.example.myapp.utils.Constants.FB_VIEW_TYPE;
 import android.content.Context;
 import android.widget.Toast;
 
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.myapp.ui.home.HomeFragment;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -37,7 +40,7 @@ public class DBqueries {
     public static List<List<HomePageModel>> lists = new ArrayList<>();
     public static List<String> loadedCategoriesNames = new ArrayList<>();
 
-    public static void loadCategories(final CategoryAdapter categoryAdapter, final Context context) {
+    public static void loadCategories(RecyclerView  categoryRecyclerView, final Context context) {
         firebaseFirestore.collection( FB_COLLECTION_CATEGORIES ).orderBy( "index" ).get().addOnCompleteListener( task ->
         {
             if (task.isSuccessful()) {
@@ -49,11 +52,13 @@ public class DBqueries {
                 String error = task.getException().getMessage();
                 Toast.makeText( context, error, Toast.LENGTH_SHORT ).show();
             }
+            CategoryAdapter categoryAdapter = new CategoryAdapter( (ArrayList<CategoryModel>) categoryModelList );
+            categoryRecyclerView.setAdapter( categoryAdapter );
             categoryAdapter.setData( (ArrayList<CategoryModel>) categoryModelList );
         } );
     }
 
-    public static void loadFragmentData(final HomePageAdapter adapter, final Context context, final int index, String categoryName) {
+    public static void loadFragmentData(RecyclerView homepageRecyclerView ,final Context context, final int index, String categoryName) {
         DocumentReference homeDR = firebaseFirestore.collection( FB_COLLECTION_CATEGORIES ).document( categoryName.toUpperCase() );
         homeDR.collection( FB_SUB_COLLECTION_TD ).orderBy( "index" ).get().addOnCompleteListener( task -> {
             if (task.isSuccessful()) {
@@ -130,7 +135,10 @@ public class DBqueries {
                         }
                     }
                 }
-                adapter.setData( lists.get( index ) );
+                HomePageAdapter homePageAdapter = new HomePageAdapter( lists.get( index ) );
+                homepageRecyclerView.setAdapter( homePageAdapter );
+                homePageAdapter.setData( lists.get( index ) );
+                HomeFragment.swipeRefreshLayout.setRefreshing( false );
             } else {
                 String error = task.getException().getMessage();
                 Toast.makeText( context, error, Toast.LENGTH_SHORT ).show();

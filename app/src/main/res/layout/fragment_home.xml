@@ -26,16 +26,24 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/category_item" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/home_page_recyclerview"
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/refresh_layout"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/category_recyclerview" />
+            app:layout_constraintTop_toBottomOf="@+id/category_recyclerview"
+            tools:ignore="MissingConstraints">
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/home_page_recyclerview"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <ImageView
             android:id="@+id/no_internet_connection"
