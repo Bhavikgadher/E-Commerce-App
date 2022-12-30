@@ -3,16 +3,22 @@ package com.example.myapp;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.android.material.tabs.TabLayout;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProductDetailsAdapter extends FragmentStateAdapter {
 
-    public ProductDetailsAdapter(@NonNull FragmentActivity fragmentActivity) {
+    private String ProductDescription;
+    private String ProductOtherDetails;
+    private List<ProductSpecificationModel> productSpecificationModelList;
+
+    public ProductDetailsAdapter(@NonNull FragmentActivity fragmentActivity, String productDescription, String productOtherDetails, ArrayList<ProductSpecificationModel> productSpecificationModelList) {
         super( fragmentActivity );
+        ProductDescription = productDescription;
+        ProductOtherDetails = productOtherDetails;
+        this.productSpecificationModelList = productSpecificationModelList;
     }
 
     @NonNull
@@ -21,11 +27,17 @@ public class ProductDetailsAdapter extends FragmentStateAdapter {
         switch (position)
         {
             case 0 :
-                return new ProductDescriptionFragment();
+                ProductDescriptionFragment productDescriptionFragment1 = new ProductDescriptionFragment();
+                productDescriptionFragment1.body = ProductDescription;
+                return productDescriptionFragment1;
             case 1:
-                return new ProductSpecificationFragment();
+                ProductSpecificationFragment productSpecificationFragment = new ProductSpecificationFragment();
+                productSpecificationFragment.productSpecificationModelList = productSpecificationModelList;
+                return productSpecificationFragment;
             case 2:
-                return new ProductDescriptionFragment();
+                ProductDescriptionFragment productDescriptionFragment2 = new ProductDescriptionFragment();
+                productDescriptionFragment2.body = ProductOtherDetails;
+                return productDescriptionFragment2;
         }
         return new ProductDescriptionFragment();
     }
@@ -34,4 +46,5 @@ public class ProductDetailsAdapter extends FragmentStateAdapter {
     public int getItemCount() {
         return 3;
     }
+
 }
