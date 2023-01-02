@@ -1,5 +1,7 @@
 package com.example.myapp;
 
+import static com.example.myapp.utils.Constants.FB_PRODUCT_ID;
+
 import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -47,6 +49,7 @@ public class GridProductLayoutAdapter extends BaseAdapter {
 
             view.setOnClickListener( view1 -> {
                 Intent productDetailsIntent = new Intent(viewGroup.getContext(),PRoductDEtailshActivity.class);
+                productDetailsIntent.putExtra( FB_PRODUCT_ID,horizontalProductScrollModelList.get( i ).getProductID() );
                 viewGroup.getContext().startActivity( productDetailsIntent );
             } );
 
@@ -55,7 +58,7 @@ public class GridProductLayoutAdapter extends BaseAdapter {
             TextView productColor = view.findViewById(R.id.h_s_product_color);
             TextView productPrice = view.findViewById(R.id.h_s_product_price);
 
-            Glide.with(viewGroup.getContext()).load(horizontalProductScrollModelList.get(i).getProduceImage()).apply( new RequestOptions().placeholder( R.drawable.ic_baseline_home_24 ) ).into( productImage );
+            Glide.with(viewGroup.getContext()).load(horizontalProductScrollModelList.get(i).getProduceImage()).apply( new RequestOptions().placeholder( R.drawable.ic_baseline_image_24 ) ).into( productImage );
             productTitle.setText(horizontalProductScrollModelList.get(i).getProductTitle());
             productColor.setText(horizontalProductScrollModelList.get(i).getProductColor());
             productPrice.setText("Rs." + horizontalProductScrollModelList.get(i).getProductPrice() + "/-");

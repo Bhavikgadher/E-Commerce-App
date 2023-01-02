@@ -1,5 +1,7 @@
 package com.example.myapp;
 
+import static com.example.myapp.utils.Constants.FB_PRODUCT_ID;
+
 import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
@@ -75,35 +77,28 @@ public class HorizontalProductScrollModel {
         private TextView productPrice;
 
         public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            productImage = itemView.findViewById(R.id.h_s_product_image);
-            productTitle = itemView.findViewById(R.id.h_s_product_title);
-            productColor = itemView.findViewById(R.id.h_s_product_color);
-            productPrice = itemView.findViewById(R.id.h_s_product_price);
+            super( itemView );
+            productImage = itemView.findViewById( R.id.h_s_product_image );
+            productTitle = itemView.findViewById( R.id.h_s_product_title );
+            productColor = itemView.findViewById( R.id.h_s_product_color );
+            productPrice = itemView.findViewById( R.id.h_s_product_price );
 
-            itemView.setOnClickListener( new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent productDetailsIntent = new Intent(itemView.getContext(),PRoductDEtailshActivity.class);
+
+        }
+
+
+        void setData(String productId,String resource, String title, String color, String price) {
+            Glide.with( itemView.getContext() ).load( resource ).apply( new RequestOptions().placeholder( R.drawable.ic_baseline_image_24 ) ).into( productImage );
+            productTitle.setText( title );
+            productColor.setText( color );
+            productPrice.setText( "Rs." + price + "/-" );
+            if (!title.equals( "" )) {
+                itemView.setOnClickListener( view -> {
+                    Intent productDetailsIntent = new Intent( itemView.getContext(), PRoductDEtailshActivity.class );
+                    productDetailsIntent.putExtra( FB_PRODUCT_ID,productId );
                     itemView.getContext().startActivity( productDetailsIntent );
-                }
-            } );
-        }
-
-
-        void setProductImage(String resource){
-            Glide.with(itemView.getContext()).load( resource ).apply( new RequestOptions().placeholder( R.drawable.ic_baseline_home_24 ) ).into(productImage);
-        }
-
-        void setProductTitle(String title) {
-            productTitle.setText(title);
-        }
-
-        void setProductColor(String color){
-            productColor.setText(color);
-        }
-        void  setProductPrice(String price){
-            productPrice.setText("Rs." + price + "/-");
+                } );
+            }
         }
     }
 }

@@ -35,6 +35,7 @@ public class Constants {
     //// category
 
     //// product
+    public static String FB_PRODUCT_ID = "PRODUCT_ID";
     public static String FB_COLLECTION_PRODUCTS = "PRODUCTS";
     public static String FB_NO_OF_PRODUCT_IMAGES = "no_of_product_images";
     public static String FB_PRODUCT_TITLE = "product_title";

@@ -54,9 +54,7 @@ public class SliderAdapter extends RecyclerView.Adapter<SliderAdapter.SliderView
         public void bind(int position) {
             SliderModel model = sliderModelList.get( position );
             ImageView banner = itemView.findViewById( R.id.banner_slide );
-
-            Glide.with( itemView.getContext() ).load( sliderModelList.get( position ).getBanner() ).apply( new RequestOptions().placeholder( R.drawable.ic_baseline_home_24 ) ).into( banner );
-
+            Glide.with( itemView.getContext() ).load( sliderModelList.get( position ).getBanner() ).apply( new RequestOptions().placeholder( R.drawable.ic_baseline_image_24 ) ).into( banner );
         }
     }
 

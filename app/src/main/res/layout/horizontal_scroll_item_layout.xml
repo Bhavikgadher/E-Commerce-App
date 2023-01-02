@@ -19,7 +19,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_phone_iphone_24" />
+        app:srcCompat="@drawable/ic_baseline_image_24" />
 
     <TextView
         android:id="@+id/h_s_product_title"

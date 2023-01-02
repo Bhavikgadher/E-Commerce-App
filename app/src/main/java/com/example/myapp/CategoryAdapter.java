@@ -1,7 +1,6 @@
 package com.example.myapp;
 
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +19,7 @@ import java.util.List;
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
 
     private List<CategoryModel> categoryModelList = new ArrayList<>();
+//    private int lastPosition = -1;
 
     public CategoryAdapter(ArrayList<CategoryModel> categoryModelList) {
     }
@@ -33,8 +33,13 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CategoryAdapter.ViewHolder viewHolder, int position) {
-        viewHolder.bind(position);
+    public void onBindViewHolder(@NonNull CategoryAdapter.ViewHolder viewHolder,  int position) {
+        viewHolder.bind( position );
+//        if (lastPosition < position) {
+//            Animation animation = AnimationUtils.loadAnimation( viewHolder.itemView.getContext(), R.anim.fade_in );
+//            viewHolder.itemView.setAnimation( animation );
+//            lastPosition = position;
+//        }
     }
 
     @Override
@@ -43,7 +48,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     }
 
     public void setData(ArrayList<CategoryModel> categoryModelList) {
-        this.categoryModelList =categoryModelList;
+        this.categoryModelList = categoryModelList;
         notifyDataSetChanged();
     }
 
@@ -58,24 +63,27 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
         }
 
-        public void bind(int position){
+        public void bind(int position) {
             CategoryModel model = categoryModelList.get( position );
             String icon = model.getCategoryIcon();
             String name = model.getCategoryName();
 
+
             categoryName.setText( name );
             if (!icon.equals( "null" )) {
-                Log.e("LOG_LOG",icon);
-                Glide.with( itemView.getContext() ).load( icon ).apply( new RequestOptions().placeholder( R.drawable.ic_baseline_home_24 ) ).into( categoryIcon );
+                Glide.with( itemView.getContext() ).load( icon ).apply( new RequestOptions().placeholder( R.drawable.ic_baseline_image_24 ) ).into( categoryIcon );
+            } else {
+                categoryIcon.setImageResource( R.drawable.ic_baseline_home_24 );
             }
-
-            itemView.setOnClickListener( view -> {
-                if (position != 0) {
-                    Intent categoryIntent = new Intent( itemView.getContext(), CategoryActivity.class );
-                    categoryIntent.putExtra( "CategoryName", name );
-                    itemView.getContext().startActivity( categoryIntent );
-                }
-            } );
+            if (!name.equals( "" )) {
+                itemView.setOnClickListener( view -> {
+                    if (position != 0) {
+                        Intent categoryIntent = new Intent( itemView.getContext(), CategoryActivity.class );
+                        categoryIntent.putExtra( "CategoryName", name );
+                        itemView.getContext().startActivity( categoryIntent );
+                    }
+                } );
+            }
         }
     }
 }

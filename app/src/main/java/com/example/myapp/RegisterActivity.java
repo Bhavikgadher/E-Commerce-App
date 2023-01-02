@@ -58,6 +58,8 @@ public class RegisterActivity extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
         if(keyCode == KeyEvent.KEYCODE_BACK){
+            SingInFragment.disableCloseBtn=false;
+            SingUpFragment.disableCloseBtn = false;
             if(onRestPassword){
                 onRestPassword = false;
                 replaceDefaultFragment(new SingInFragment(),true);
