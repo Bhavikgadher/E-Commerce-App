@@ -83,7 +83,7 @@ public class HomePageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, @SuppressLint("RecyclerView") int position) {
         switch (homePageModelList.get( position ).getType()) {
             case HomePageModel.BANNER_SLIDER:
                 List<SliderModel> sliderModelList = homePageModelList.get( position ).getSliderModelList();
@@ -110,11 +110,11 @@ public class HomePageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             default:
                 return;
         }
-//        if (lastPosition < position) {
-//            Animation animation = AnimationUtils.loadAnimation( viewHolder.itemView.getContext(), R.anim.fade_in );
-//           viewHolder.itemView.setAnimation( animation );
+//       if (lastPosition < position) {
+//           Animation animation = AnimationUtils.loadAnimation( viewHolder.itemView.getContext(), R.anim.fade_in );
+//          viewHolder.itemView.setAnimation( animation );
 //            lastPosition = position;
-//        }
+//       }
     }
 
     public int getItemCount() {

@@ -1,5 +1,6 @@
 package com.example.myapp;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,9 +9,6 @@ import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 
 public class MyWishlistFragment extends Fragment {
     public MyWishlistFragment() {
@@ -18,6 +16,8 @@ public class MyWishlistFragment extends Fragment {
     }
 
     private RecyclerView wishlistRecyclerView;
+    private Dialog loadingDialog;
+    public static WishlistAdapter wishlistAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,10 +32,22 @@ public class MyWishlistFragment extends Fragment {
         View view = inflater.inflate( R.layout.fragment_my_wishlist, container, false );
 
         wishlistRecyclerView= view.findViewById( R.id.rv_my_wishlist );
-        List<WishlistModel> wishlistModelList = new ArrayList<>();
+        loadingDialog = new Dialog( getContext() );
+        loadingDialog.setContentView( R.layout.loading_progress_dialog );
+        loadingDialog.setCancelable( false );
+        loadingDialog.getWindow().setBackgroundDrawable( getContext().getDrawable( R.drawable.slider_background ) );
+        loadingDialog.getWindow().setLayout( ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT );
+        loadingDialog.show();
+
 //        wishlistModelList.add( new WishlistModel( R.mipmap.ic_14_plus, "Iphone 14 pro", 1, "5", 145, "Rs.89,999/-", "Rs.98,999/-", "Case on Delivery" ) );
 
-        WishlistAdapter wishlistAdapter = new WishlistAdapter( wishlistModelList,true );
+        if (DBqueries.wishlistModelList.size() == 0){
+            DBqueries.wishList.clear();
+            DBqueries.loadWishlist( getContext(),loadingDialog,true );
+        }else {
+            loadingDialog.dismiss();
+        }
+        wishlistAdapter = new WishlistAdapter( DBqueries.wishlistModelList,true );
         wishlistRecyclerView.setAdapter( wishlistAdapter );
         wishlistAdapter.notifyDataSetChanged();
         return view;

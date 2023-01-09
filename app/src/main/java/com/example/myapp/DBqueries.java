@@ -1,37 +1,61 @@
 package com.example.myapp;
 
+import static com.example.myapp.PRoductDEtailshActivity.addToWishListBtn;
+import static com.example.myapp.PRoductDEtailshActivity.productId;
+import static com.example.myapp.utils.Constants.FB_AVERAGE_RATING;
 import static com.example.myapp.utils.Constants.FB_AVERAGE_RATING_;
 import static com.example.myapp.utils.Constants.FB_BACKGROUND;
+import static com.example.myapp.utils.Constants.FB_COD;
 import static com.example.myapp.utils.Constants.FB_COD_;
 import static com.example.myapp.utils.Constants.FB_COLLECTION_CATEGORIES;
+import static com.example.myapp.utils.Constants.FB_COLLECTION_PRODUCTS;
+import static com.example.myapp.utils.Constants.FB_CUTTED_PRICE;
 import static com.example.myapp.utils.Constants.FB_CUTTED_PRICE_;
+import static com.example.myapp.utils.Constants.FB_FREE_COUPENS;
 import static com.example.myapp.utils.Constants.FB_FREE_COUPENS_;
+import static com.example.myapp.utils.Constants.FB_LIST_SIZE;
+import static com.example.myapp.utils.Constants.FB_MY_WISHLIST;
 import static com.example.myapp.utils.Constants.FB_NO_OF_BANNERS;
 import static com.example.myapp.utils.Constants.FB_NO_OF_PRODUCTS;
 import static com.example.myapp.utils.Constants.FB_PRODUCT_FULL_TITLE_;
 import static com.example.myapp.utils.Constants.FB_PRODUCT_ID_;
 import static com.example.myapp.utils.Constants.FB_PRODUCT_IMAGE_;
 import static com.example.myapp.utils.Constants.FB_PRODUCT_IMAGE_Q;
+import static com.example.myapp.utils.Constants.FB_PRODUCT_PRICE;
 import static com.example.myapp.utils.Constants.FB_PRODUCT_PRICE_;
 import static com.example.myapp.utils.Constants.FB_PRODUCT_SUBTITLE_;
 import static com.example.myapp.utils.Constants.FB_PRODUCT_TITLE_;
 import static com.example.myapp.utils.Constants.FB_STRIP_AD_BANNER;
 import static com.example.myapp.utils.Constants.FB_SUB_COLLECTION_TD;
+import static com.example.myapp.utils.Constants.FB_TOTAL_RATINGS;
 import static com.example.myapp.utils.Constants.FB_TOTAL_RATINGS_;
+import static com.example.myapp.utils.Constants.FB_USERS;
+import static com.example.myapp.utils.Constants.FB_USER_DATA;
 import static com.example.myapp.utils.Constants.FB_VIEW_TYPE;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapp.ui.home.HomeFragment;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class DBqueries {
 
@@ -39,8 +63,10 @@ public class DBqueries {
     public static List<CategoryModel> categoryModelList = new ArrayList<>();
     public static List<List<HomePageModel>> lists = new ArrayList<>();
     public static List<String> loadedCategoriesNames = new ArrayList<>();
+    public static List<String> wishList = new ArrayList<>();
+    public static List<WishlistModel> wishlistModelList = new ArrayList<>();
 
-    public static void loadCategories(RecyclerView  categoryRecyclerView, final Context context) {
+    public static void loadCategories(RecyclerView categoryRecyclerView, Context context) {
         firebaseFirestore.collection( FB_COLLECTION_CATEGORIES ).orderBy( "index" ).get().addOnCompleteListener( task ->
         {
             if (task.isSuccessful()) {
@@ -58,7 +84,7 @@ public class DBqueries {
         } );
     }
 
-    public static void loadFragmentData(RecyclerView homepageRecyclerView ,final Context context, final int index, String categoryName) {
+    public static void loadFragmentData(RecyclerView homepageRecyclerView, Context context, int index, String categoryName) {
         DocumentReference homeDR = firebaseFirestore.collection( FB_COLLECTION_CATEGORIES ).document( categoryName.toUpperCase() );
         homeDR.collection( FB_SUB_COLLECTION_TD ).orderBy( "index" ).get().addOnCompleteListener( task -> {
             if (task.isSuccessful()) {
@@ -146,4 +172,104 @@ public class DBqueries {
         } );
 
     }
+
+    public static void loadWishlist(Context context, Dialog dialog, boolean loadProductData) {
+
+        firebaseFirestore.collection( FB_USERS ).document( FirebaseAuth.getInstance().getUid() ).collection( FB_USER_DATA ).document( FB_MY_WISHLIST )
+                .get().addOnCompleteListener( new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (long i = 0; i < (long) task.getResult().get( FB_LIST_SIZE ); i++) {
+                                wishList.add( task.getResult().get( FB_PRODUCT_ID_ + i, String.class ) );
+
+                                if (DBqueries.wishList.contains( productId )) {
+                                    PRoductDEtailshActivity.ALREADY_ADDED_TO_WISHLIST = true;
+                                    if (addToWishListBtn != null) {
+                                        addToWishListBtn.setSupportImageTintList( ContextCompat.getColorStateList( context, R.color.red ) );
+                                    }
+                                } else {
+                                    if (addToWishListBtn != null) {
+                                        addToWishListBtn.setSupportImageTintList( ContextCompat.getColorStateList( context, R.color.gray ) );
+                                    }
+                                    PRoductDEtailshActivity.ALREADY_ADDED_TO_WISHLIST = false;
+                                }
+
+                                if (loadProductData) {
+                                    firebaseFirestore.collection( FB_COLLECTION_PRODUCTS ).document( Objects.requireNonNull( task.getResult().get( FB_PRODUCT_ID_ + i, String.class ) ) )
+                                            .get().addOnCompleteListener( new OnCompleteListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                    if (task.isSuccessful()) {
+                                                        wishlistModelList.add(
+                                                                new WishlistModel(
+                                                                        task.getResult().get( "product_image_1", String.class ),
+                                                                        task.getResult().get( "product_title_1", String.class ),
+                                                                        task.getResult().get( FB_FREE_COUPENS, Long.class ),
+                                                                        task.getResult().get( FB_AVERAGE_RATING, String.class ),
+                                                                        task.getResult().get( FB_TOTAL_RATINGS, Long.class ),
+                                                                        task.getResult().get( FB_PRODUCT_PRICE, String.class ),
+                                                                        task.getResult().get( FB_CUTTED_PRICE, String.class ),
+                                                                        task.getResult().get( FB_COD ), Boolean.class ) );
+                                                        MyWishlistFragment.wishlistAdapter.notifyDataSetChanged();
+
+                                                    } else {
+                                                        String error = task.getException().getMessage();
+                                                        Toast.makeText( context, error, Toast.LENGTH_SHORT ).show();
+                                                    }
+                                                }
+                                            } );
+                                }
+                            }
+                        } else {
+                            String error = task.getException().getMessage();
+                            Toast.makeText( context, error, Toast.LENGTH_SHORT ).show();
+                        }
+                        dialog.dismiss();
+                    }
+                } );
+
+    }
+
+    public static void removeFromWishlist(int index, Context context) {
+        Log.e( "LOG_LOG", " :: " + index );
+        Log.e( "LOG_LOG", " :: " + wishList.size() );
+        Log.e( "LOG_LOG", wishList.toString() );
+        wishList.remove( index );
+        Map<String, Object> updateWishlist = new HashMap<>();
+        for (int i = 0; i < wishList.size(); i++) {
+            updateWishlist.put( FB_PRODUCT_ID_ + i, wishList.get( i ) );
+        }
+        updateWishlist.put( FB_LIST_SIZE, (long) wishList.size() );
+
+        firebaseFirestore.collection( FB_USERS ).document( FirebaseAuth.getInstance().getUid() ).collection( FB_USER_DATA )
+                .document( FB_MY_WISHLIST ).set( updateWishlist ).addOnCompleteListener( task -> {
+                    if (task.isSuccessful()) {
+                        if (wishlistModelList.size() != 0) {
+                            wishlistModelList.remove( index );
+                            MyWishlistFragment.wishlistAdapter.notifyDataSetChanged();
+                        }
+                        PRoductDEtailshActivity.ALREADY_ADDED_TO_WISHLIST = false;
+                        Toast.makeText( context, "Removed Successfully!", Toast.LENGTH_SHORT ).show();
+                    } else {
+                        if (addToWishListBtn != null) {
+                            addToWishListBtn.setSupportImageTintList( context.getResources().getColorStateList( R.color.red ) );
+                        }
+                        String error = task.getException().getMessage();
+                        Toast.makeText( context, error, Toast.LENGTH_SHORT ).show();
+                    }
+                    if (addToWishListBtn != null) {
+                        addToWishListBtn.setEnabled( true );
+                    }
+                } );
+    }
+
+    public static void clearData() {
+        categoryModelList.clear();
+        lists.clear();
+        loadedCategoriesNames.clear();
+        wishList.clear();
+        wishlistModelList.clear();
+    }
+
 }

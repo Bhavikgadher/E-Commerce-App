@@ -12,4 +12,5 @@
     <color name="green">#388E3C</color>
     <color name="orange">#F57C00</color>
     <color name="RecyclerViewBackGround">#d6d6d6</color>
+    <color name="gray">#9e9e9e</color>
 </resources>

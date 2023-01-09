@@ -1,5 +1,9 @@
 package com.example.myapp;
 
+import static com.example.myapp.utils.Constants.FB_LIST_SIZE;
+import static com.example.myapp.utils.Constants.FB_MY_WISHLIST;
+import static com.example.myapp.utils.Constants.FB_USER_DATA;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
@@ -25,7 +29,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -78,9 +81,9 @@ public class SingUpFragment extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
 
-        if (disableCloseBtn){
+        if (disableCloseBtn) {
             closeBtn.setVisibility( View.GONE );
-        }else{
+        } else {
             closeBtn.setVisibility( View.VISIBLE );
         }
         return view;
@@ -204,26 +207,38 @@ public class SingUpFragment extends Fragment {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
 
-                                    Map<Object, String> userdata = new HashMap<>();
+                                    Map<String,Object> userdata = new HashMap<>();
                                     userdata.put( "fullName", fullName.getText().toString() );
 
-                                    firebaseFirestore.collection( "USER" )
-                                            .add( userdata )
-                                            .addOnCompleteListener( new OnCompleteListener<DocumentReference>() {
+                                    firebaseFirestore.collection( "USER" ).document( firebaseAuth.getUid() )
+                                            .set( userdata )
+                                            .addOnCompleteListener( new OnCompleteListener<Void>() {
                                                 @Override
-                                                public void onComplete(@NonNull Task<DocumentReference> task) {
+                                                public void onComplete(@NonNull Task<Void> task) {
                                                     if (task.isSuccessful()) {
-                                                        mainIntent();
+                                                        Map<Object, Long> listSize = new HashMap<>();
+                                                        listSize.put( (Object) FB_LIST_SIZE, 0L );
+                                                        firebaseFirestore.collection( "USER" ).document( firebaseAuth.getUid() ).collection( FB_USER_DATA )
+                                                                .document( FB_MY_WISHLIST ).set( listSize ).addOnCompleteListener( new OnCompleteListener<Void>() {
+                                                                    @Override
+                                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                                        if (task.isSuccessful()) {
+                                                                            mainIntent();
+                                                                        } else {
+                                                                            progressBar.setVisibility( View.INVISIBLE );
+                                                                            singUpBtn.setEnabled( true );
+                                                                            singUpBtn.setTextColor( Color.argb( 50, 255, 255, 255 ) );
+                                                                            String error = task.getException().getMessage();
+                                                                            Toast.makeText( getActivity(), error, Toast.LENGTH_SHORT ).show();
+                                                                        }
+                                                                    }
+                                                                } );
                                                     } else {
-                                                        progressBar.setVisibility( View.INVISIBLE );
-                                                        singUpBtn.setEnabled( true );
-                                                        singUpBtn.setTextColor( Color.argb( 50, 255, 255, 255 ) );
                                                         String error = task.getException().getMessage();
                                                         Toast.makeText( getActivity(), error, Toast.LENGTH_SHORT ).show();
                                                     }
                                                 }
                                             } );
-
                                 } else {
                                     progressBar.setVisibility( View.INVISIBLE );
                                     singUpBtn.setEnabled( true );
@@ -233,7 +248,6 @@ public class SingUpFragment extends Fragment {
                                 }
                             }
                         } );
-
             } else {
                 confirmPassword.setError( "password doesn't matched!" );
             }
@@ -241,7 +255,6 @@ public class SingUpFragment extends Fragment {
             email.setError( "Invalid Email!" );
         }
     }
-
     private void mainIntent() {
         if (disableCloseBtn) {
             disableCloseBtn = false;

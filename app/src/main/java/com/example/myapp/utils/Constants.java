@@ -35,6 +35,7 @@ public class Constants {
     //// category
 
     //// product
+    public static String FBQ_PRODUCT_ID = "product_ID";
     public static String FB_PRODUCT_ID = "PRODUCT_ID";
     public static String FB_COLLECTION_PRODUCTS = "PRODUCTS";
     public static String FB_NO_OF_PRODUCT_IMAGES = "no_of_product_images";
@@ -59,6 +60,10 @@ public class Constants {
     public static String FB__VALUE = "_value";
 
     //// product
+    public static String FB_USERS = "USER";
+    public static String FB_USER_DATA = "USER_DATA";
+    public static String FB_MY_WISHLIST = "MY_WISHLIST";
+    public static String FB_LIST_SIZE = "list_size";
 
 
 }

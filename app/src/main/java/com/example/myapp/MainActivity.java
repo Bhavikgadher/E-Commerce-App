@@ -181,6 +181,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 gotoFragment( "My Account", new MyAccountFragment() );
             } else if (id == R.id.nav_sign_out) {
                 FirebaseAuth.getInstance().signOut();
+                DBqueries.clearData();
                 Intent registerIntent = new Intent(MainActivity.this,RegisterActivity.class);
                 startActivity( registerIntent );
                 finish();

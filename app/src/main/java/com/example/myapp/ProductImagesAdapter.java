@@ -25,7 +25,7 @@ public class ProductImagesAdapter extends RecyclerView.Adapter<ProductImagesAdap
     @Override
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         RawProductImageBinding binding = RawProductImageBinding.inflate( LayoutInflater.from( parent.getContext() ), parent, false );
-        Glide.with( parent.getContext() ).load( productImages.get( viewType ) ).apply( new RequestOptions().placeholder( R.drawable.ic_baseline_home_24 ) ).into( binding.ivProduct );
+        Glide.with( parent.getContext() ).load( productImages.get( viewType ) ).apply( new RequestOptions().placeholder( R.drawable.ic_baseline_image_24 ) ).into( binding.ivProduct );
         return new ProductViewHolder( binding );
     }
 
