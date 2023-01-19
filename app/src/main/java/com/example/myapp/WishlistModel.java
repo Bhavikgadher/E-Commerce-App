@@ -2,6 +2,7 @@ package com.example.myapp;
 
 public class WishlistModel {
 
+    private String productId;
     private String productImage;
     private String productTitle;
     private long freeCoupens;
@@ -11,7 +12,9 @@ public class WishlistModel {
     private String cuttedPrice;
     private Class<Boolean> COD;
 
-    public WishlistModel(String productImage, String productTitle, Long freeCoupens, String rating, Long totalRating, String productPrice, String cuttedPrice, Object o, Class<Boolean> COD) {
+
+    public WishlistModel(String productId,String productImage, String productTitle, Long freeCoupens, String rating, Long totalRating, String productPrice, String cuttedPrice, Object o, Class<Boolean> COD) {
+        this.productId = productId;
         this.productImage = productImage;
         this.productTitle = productTitle;
         this.freeCoupens = freeCoupens;
@@ -20,6 +23,14 @@ public class WishlistModel {
         this.productPrice = productPrice;
         this.cuttedPrice = cuttedPrice;
         this.COD = COD;
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
     public String getProductImage() {

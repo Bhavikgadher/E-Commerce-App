@@ -1,6 +1,7 @@
 package com.example.myapp;
 
 import static com.example.myapp.utils.Constants.FB_LIST_SIZE;
+import static com.example.myapp.utils.Constants.FB_MY_RATINGS;
 import static com.example.myapp.utils.Constants.FB_MY_WISHLIST;
 import static com.example.myapp.utils.Constants.FB_USER_DATA;
 
@@ -29,9 +30,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SingUpFragment extends Fragment {
@@ -206,8 +210,7 @@ public class SingUpFragment extends Fragment {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-
-                                    Map<String,Object> userdata = new HashMap<>();
+                                    Map<String, Object> userdata = new HashMap<>();
                                     userdata.put( "fullName", fullName.getText().toString() );
 
                                     firebaseFirestore.collection( "USER" ).document( firebaseAuth.getUid() )
@@ -216,23 +219,45 @@ public class SingUpFragment extends Fragment {
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
                                                     if (task.isSuccessful()) {
-                                                        Map<Object, Long> listSize = new HashMap<>();
-                                                        listSize.put( (Object) FB_LIST_SIZE, 0L );
-                                                        firebaseFirestore.collection( "USER" ).document( firebaseAuth.getUid() ).collection( FB_USER_DATA )
-                                                                .document( FB_MY_WISHLIST ).set( listSize ).addOnCompleteListener( new OnCompleteListener<Void>() {
-                                                                    @Override
-                                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                                        if (task.isSuccessful()) {
+
+                                                        CollectionReference userDataReference = firebaseFirestore.collection( "USER" ).document( firebaseAuth.getUid() ).collection( FB_USER_DATA );
+                                                        // MAPS
+                                                        Map<String, Object> wishlistMap = new HashMap<>();
+                                                        wishlistMap.put( FB_LIST_SIZE, (long) 0 );
+
+                                                        Map<String, Object> ratingsMap = new HashMap<>();
+                                                        ratingsMap.put( FB_LIST_SIZE, (long) 0 );
+                                                        // MAPS
+
+                                                        List<String> documentNames = new ArrayList<>();
+                                                        documentNames.add( FB_MY_WISHLIST );
+                                                        documentNames.add( FB_MY_RATINGS );
+
+                                                        List<Map<String, Object>> documentFields = new ArrayList<>();
+                                                        documentFields.add( wishlistMap );
+                                                        documentFields.add( ratingsMap );
+
+                                                        for (int i = 0; i < documentNames.size(); i++) {
+
+                                                            int finalI = i;
+                                                            userDataReference.document( documentNames.get( i ) ).set( documentFields.get( i ) ).addOnCompleteListener( new OnCompleteListener<Void>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<Void> task) {
+                                                                    if (task.isSuccessful()) {
+                                                                        if (finalI == documentNames.size() -1) {
                                                                             mainIntent();
-                                                                        } else {
-                                                                            progressBar.setVisibility( View.INVISIBLE );
-                                                                            singUpBtn.setEnabled( true );
-                                                                            singUpBtn.setTextColor( Color.argb( 50, 255, 255, 255 ) );
-                                                                            String error = task.getException().getMessage();
-                                                                            Toast.makeText( getActivity(), error, Toast.LENGTH_SHORT ).show();
                                                                         }
+                                                                    } else {
+                                                                        progressBar.setVisibility( View.INVISIBLE );
+                                                                        singUpBtn.setEnabled( true );
+                                                                        singUpBtn.setTextColor( Color.argb( 50, 255, 255, 255 ) );
+                                                                        String error = task.getException().getMessage();
+                                                                        Toast.makeText( getActivity(), error, Toast.LENGTH_SHORT ).show();
                                                                     }
-                                                                } );
+                                                                }
+                                                            } );
+
+                                                        }
                                                     } else {
                                                         String error = task.getException().getMessage();
                                                         Toast.makeText( getActivity(), error, Toast.LENGTH_SHORT ).show();
@@ -255,6 +280,7 @@ public class SingUpFragment extends Fragment {
             email.setError( "Invalid Email!" );
         }
     }
+
     private void mainIntent() {
         if (disableCloseBtn) {
             disableCloseBtn = false;

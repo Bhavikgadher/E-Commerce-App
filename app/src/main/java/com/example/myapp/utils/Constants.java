@@ -65,6 +65,9 @@ public class Constants {
     public static String FB_MY_WISHLIST = "MY_WISHLIST";
     public static String FB_LIST_SIZE = "list_size";
 
+    /// rating
+    public static String FB_MY_RATINGS = "MY_RATINGS";
+    public static String FB_RATING_ = "rating_";
 
 }
 

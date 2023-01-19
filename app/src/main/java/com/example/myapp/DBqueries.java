@@ -1,7 +1,9 @@
 package com.example.myapp;
 
 import static com.example.myapp.PRoductDEtailshActivity.addToWishListBtn;
+import static com.example.myapp.PRoductDEtailshActivity.initialRating;
 import static com.example.myapp.PRoductDEtailshActivity.productId;
+import static com.example.myapp.PRoductDEtailshActivity.setRating;
 import static com.example.myapp.utils.Constants.FB_AVERAGE_RATING;
 import static com.example.myapp.utils.Constants.FB_AVERAGE_RATING_;
 import static com.example.myapp.utils.Constants.FB_BACKGROUND;
@@ -14,6 +16,7 @@ import static com.example.myapp.utils.Constants.FB_CUTTED_PRICE_;
 import static com.example.myapp.utils.Constants.FB_FREE_COUPENS;
 import static com.example.myapp.utils.Constants.FB_FREE_COUPENS_;
 import static com.example.myapp.utils.Constants.FB_LIST_SIZE;
+import static com.example.myapp.utils.Constants.FB_MY_RATINGS;
 import static com.example.myapp.utils.Constants.FB_MY_WISHLIST;
 import static com.example.myapp.utils.Constants.FB_NO_OF_BANNERS;
 import static com.example.myapp.utils.Constants.FB_NO_OF_PRODUCTS;
@@ -25,6 +28,7 @@ import static com.example.myapp.utils.Constants.FB_PRODUCT_PRICE;
 import static com.example.myapp.utils.Constants.FB_PRODUCT_PRICE_;
 import static com.example.myapp.utils.Constants.FB_PRODUCT_SUBTITLE_;
 import static com.example.myapp.utils.Constants.FB_PRODUCT_TITLE_;
+import static com.example.myapp.utils.Constants.FB_RATING_;
 import static com.example.myapp.utils.Constants.FB_STRIP_AD_BANNER;
 import static com.example.myapp.utils.Constants.FB_SUB_COLLECTION_TD;
 import static com.example.myapp.utils.Constants.FB_TOTAL_RATINGS;
@@ -60,13 +64,21 @@ import java.util.Objects;
 public class DBqueries {
 
     public static FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+
     public static List<CategoryModel> categoryModelList = new ArrayList<>();
+
     public static List<List<HomePageModel>> lists = new ArrayList<>();
     public static List<String> loadedCategoriesNames = new ArrayList<>();
+
     public static List<String> wishList = new ArrayList<>();
     public static List<WishlistModel> wishlistModelList = new ArrayList<>();
 
+    public static List<String> myRatedIds = new ArrayList<>();
+    public static List<Long> myRating = new ArrayList<>();
+
+
     public static void loadCategories(RecyclerView categoryRecyclerView, Context context) {
+        categoryModelList.clear();
         firebaseFirestore.collection( FB_COLLECTION_CATEGORIES ).orderBy( "index" ).get().addOnCompleteListener( task ->
         {
             if (task.isSuccessful()) {
@@ -131,6 +143,7 @@ public class DBqueries {
                                 );
                                 viewAllProductList.add(
                                         new WishlistModel(
+                                                documentSnapshot.get( FB_PRODUCT_ID_ + i, String.class ),
                                                 documentSnapshot.get( FB_PRODUCT_IMAGE_Q + i, String.class ),
                                                 documentSnapshot.get( FB_PRODUCT_FULL_TITLE_ + i, String.class ),
                                                 documentSnapshot.get( FB_FREE_COUPENS_ + i, Long.class ),
@@ -174,7 +187,7 @@ public class DBqueries {
     }
 
     public static void loadWishlist(Context context, Dialog dialog, boolean loadProductData) {
-
+        wishList.clear();
         firebaseFirestore.collection( FB_USERS ).document( FirebaseAuth.getInstance().getUid() ).collection( FB_USER_DATA ).document( FB_MY_WISHLIST )
                 .get().addOnCompleteListener( new OnCompleteListener<DocumentSnapshot>() {
                     @Override
@@ -196,13 +209,16 @@ public class DBqueries {
                                 }
 
                                 if (loadProductData) {
-                                    firebaseFirestore.collection( FB_COLLECTION_PRODUCTS ).document( Objects.requireNonNull( task.getResult().get( FB_PRODUCT_ID_ + i, String.class ) ) )
+                                    wishlistModelList.clear();
+                                    String productId = task.getResult().get( FB_PRODUCT_ID_ + i, String.class );
+                                    firebaseFirestore.collection( FB_COLLECTION_PRODUCTS ).document( Objects.requireNonNull( productId ) )
                                             .get().addOnCompleteListener( new OnCompleteListener<DocumentSnapshot>() {
                                                 @Override
                                                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                     if (task.isSuccessful()) {
                                                         wishlistModelList.add(
                                                                 new WishlistModel(
+                                                                        productId,
                                                                         task.getResult().get( "product_image_1", String.class ),
                                                                         task.getResult().get( "product_title_1", String.class ),
                                                                         task.getResult().get( FB_FREE_COUPENS, Long.class ),
@@ -258,10 +274,43 @@ public class DBqueries {
                         String error = task.getException().getMessage();
                         Toast.makeText( context, error, Toast.LENGTH_SHORT ).show();
                     }
-                    if (addToWishListBtn != null) {
-                        addToWishListBtn.setEnabled( true );
-                    }
+//                    if (addToWishListBtn != null) {
+//                        addToWishListBtn.setEnabled( true );
+//                    }
+                    PRoductDEtailshActivity.running_wishlist_query = false;
                 } );
+    }
+
+    public static void loadRatingList(Context context) {
+        if (!PRoductDEtailshActivity.running_rating_query) {
+            PRoductDEtailshActivity.running_rating_query = true;
+            myRatedIds.clear();
+            myRating.clear();
+            firebaseFirestore.collection( FB_USERS ).document( FirebaseAuth.getInstance().getUid() ).collection( FB_USER_DATA )
+                    .document( FB_MY_RATINGS ).get().addOnCompleteListener( new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (long i = 0; i < (long) task.getResult().get( FB_LIST_SIZE ); i++) {
+                                    myRatedIds.add( task.getResult().get( FB_PRODUCT_ID_ + i, String.class ) );
+                                    myRating.add( (Long) task.getResult().get( FB_RATING_ + i ) );
+
+                                    if (task.getResult().get( FB_PRODUCT_ID_ + i, String.class ).equals( productId )) {
+                                        initialRating = Integer.parseInt( String.valueOf( (Long) task.getResult().get( FB_RATING_ + i ) ) ) - 1;
+                                        if (PRoductDEtailshActivity.binding.ratingsContent.rateNowContainer != null) {
+                                            setRating( initialRating );
+                                        }
+                                    }
+
+                                }
+                            } else {
+                                String error = task.getException().getMessage();
+                                Toast.makeText( context, error, Toast.LENGTH_SHORT ).show();
+                            }
+                            PRoductDEtailshActivity.running_rating_query = false;
+                        }
+                    } );
+        }
     }
 
     public static void clearData() {
