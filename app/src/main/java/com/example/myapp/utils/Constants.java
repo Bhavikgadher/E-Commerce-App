@@ -64,10 +64,12 @@ public class Constants {
     public static String FB_USER_DATA = "USER_DATA";
     public static String FB_MY_WISHLIST = "MY_WISHLIST";
     public static String FB_LIST_SIZE = "list_size";
+    public static String FB_MY_CART = "MY_CART";
 
     /// rating
     public static String FB_MY_RATINGS = "MY_RATINGS";
     public static String FB_RATING_ = "rating_";
+
 
 }
 

@@ -16,6 +16,7 @@ import static com.example.myapp.utils.Constants.FB_CUTTED_PRICE_;
 import static com.example.myapp.utils.Constants.FB_FREE_COUPENS;
 import static com.example.myapp.utils.Constants.FB_FREE_COUPENS_;
 import static com.example.myapp.utils.Constants.FB_LIST_SIZE;
+import static com.example.myapp.utils.Constants.FB_MY_CART;
 import static com.example.myapp.utils.Constants.FB_MY_RATINGS;
 import static com.example.myapp.utils.Constants.FB_MY_WISHLIST;
 import static com.example.myapp.utils.Constants.FB_NO_OF_BANNERS;
@@ -27,6 +28,7 @@ import static com.example.myapp.utils.Constants.FB_PRODUCT_IMAGE_Q;
 import static com.example.myapp.utils.Constants.FB_PRODUCT_PRICE;
 import static com.example.myapp.utils.Constants.FB_PRODUCT_PRICE_;
 import static com.example.myapp.utils.Constants.FB_PRODUCT_SUBTITLE_;
+import static com.example.myapp.utils.Constants.FB_PRODUCT_TITLE;
 import static com.example.myapp.utils.Constants.FB_PRODUCT_TITLE_;
 import static com.example.myapp.utils.Constants.FB_RATING_;
 import static com.example.myapp.utils.Constants.FB_STRIP_AD_BANNER;
@@ -39,7 +41,6 @@ import static com.example.myapp.utils.Constants.FB_VIEW_TYPE;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -72,6 +73,9 @@ public class DBqueries {
 
     public static List<String> wishList = new ArrayList<>();
     public static List<WishlistModel> wishlistModelList = new ArrayList<>();
+
+    public static List<String> cartList = new ArrayList<>();
+    public static List<CartItemModel> cartItemModelList = new ArrayList<>();
 
     public static List<String> myRatedIds = new ArrayList<>();
     public static List<Long> myRating = new ArrayList<>();
@@ -248,9 +252,7 @@ public class DBqueries {
     }
 
     public static void removeFromWishlist(int index, Context context) {
-        Log.e( "LOG_LOG", " :: " + index );
-        Log.e( "LOG_LOG", " :: " + wishList.size() );
-        Log.e( "LOG_LOG", wishList.toString() );
+        String removedProductId = wishList.get( index );
         wishList.remove( index );
         Map<String, Object> updateWishlist = new HashMap<>();
         for (int i = 0; i < wishList.size(); i++) {
@@ -271,12 +273,10 @@ public class DBqueries {
                         if (addToWishListBtn != null) {
                             addToWishListBtn.setSupportImageTintList( context.getResources().getColorStateList( R.color.red ) );
                         }
+                        wishList.add( index,removedProductId );
                         String error = task.getException().getMessage();
                         Toast.makeText( context, error, Toast.LENGTH_SHORT ).show();
                     }
-//                    if (addToWishListBtn != null) {
-//                        addToWishListBtn.setEnabled( true );
-//                    }
                     PRoductDEtailshActivity.running_wishlist_query = false;
                 } );
     }
@@ -311,6 +311,88 @@ public class DBqueries {
                         }
                     } );
         }
+    }
+
+    public static void loadCartList(Context context,Dialog dialog, boolean loadProductData) {
+        cartList.clear();
+        firebaseFirestore.collection( FB_USERS ).document( FirebaseAuth.getInstance().getUid() ).collection( FB_USER_DATA ).document( FB_MY_CART )
+                .get().addOnCompleteListener( new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (long i = 0; i < (long) task.getResult().get( FB_LIST_SIZE ); i++) {
+                                cartList.add( task.getResult().get( FB_PRODUCT_ID_ + i, String.class ) );
+
+                                if (DBqueries.cartList.contains( productId )) {
+                                    PRoductDEtailshActivity.ALREADY_ADDED_TO_CART = true;
+                                } else {
+                                    PRoductDEtailshActivity.ALREADY_ADDED_TO_CART = false;
+                                }
+                                if (loadProductData) {
+                                    cartItemModelList.clear();
+                                    String productId = task.getResult().get( FB_PRODUCT_ID_ + i, String.class );
+                                    firebaseFirestore.collection( FB_COLLECTION_PRODUCTS ).document( Objects.requireNonNull( productId ) )
+                                            .get().addOnCompleteListener( new OnCompleteListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                    if (task.isSuccessful()) {
+                                                        cartItemModelList.add(
+                                                                new CartItemModel( CartItemModel.CART_ITEM,
+                                                                        productId,
+                                                                        task.getResult().get( "product_image_1", String.class ),
+                                                                        task.getResult().get( FB_PRODUCT_TITLE, String.class ),
+                                                                        task.getResult().get( FB_FREE_COUPENS, Long.class ),
+                                                                        task.getResult().get( FB_PRODUCT_PRICE, String.class ),
+                                                                        task.getResult().get( FB_CUTTED_PRICE, String.class ),
+                                                                        (long) 1,
+                                                                        (long) 0,
+                                                                        (long) 0 ) );
+                                                        MyCartFragment.cartAdapter.notifyDataSetChanged();
+
+                                                    } else {
+                                                        String error = task.getException().getMessage();
+                                                        Toast.makeText( context, error, Toast.LENGTH_SHORT ).show();
+                                                    }
+                                                }
+                                            } );
+                                }
+                            }
+                        } else {
+                            String error = task.getException().getMessage();
+                            Toast.makeText( context, error, Toast.LENGTH_SHORT ).show();
+                        }
+                        dialog.dismiss();
+                    }
+                });
+
+
+    }
+
+    public static void removeFromCart(int index,Context context){
+        String removedProductId = cartList.get( index );
+        cartList.remove( index );
+        Map<String, Object> updateCartList = new HashMap<>();
+        for (int i = 0; i < cartList.size(); i++) {
+            updateCartList.put( FB_PRODUCT_ID_ + i, cartList.get( i ) );
+        }
+        updateCartList.put( FB_LIST_SIZE, (long) cartList.size() );
+
+        firebaseFirestore.collection( FB_USERS ).document( FirebaseAuth.getInstance().getUid() ).collection( FB_USER_DATA )
+                .document( FB_MY_CART ).set( updateCartList ).addOnCompleteListener( task -> {
+                    if (task.isSuccessful()) {
+                        if (cartItemModelList.size() != 0) {
+                            cartItemModelList.remove( index );
+                            MyCartFragment.cartAdapter.notifyDataSetChanged();
+                        }
+                        PRoductDEtailshActivity.ALREADY_ADDED_TO_CART = false;
+                        Toast.makeText( context, "Removed Successfully!", Toast.LENGTH_SHORT ).show();
+                    } else {
+                        cartList.add( index,removedProductId );
+                        String error = task.getException().getMessage();
+                        Toast.makeText( context, error, Toast.LENGTH_SHORT ).show();
+                    }
+                    PRoductDEtailshActivity.running_cart_query = false;
+                } );
     }
 
     public static void clearData() {

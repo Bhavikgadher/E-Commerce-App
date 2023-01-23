@@ -32,12 +32,14 @@ public class MyWishlistFragment extends Fragment {
         View view = inflater.inflate( R.layout.fragment_my_wishlist, container, false );
 
         wishlistRecyclerView= view.findViewById( R.id.rv_my_wishlist );
+        /// loading
         loadingDialog = new Dialog( getContext() );
         loadingDialog.setContentView( R.layout.loading_progress_dialog );
         loadingDialog.setCancelable( false );
         loadingDialog.getWindow().setBackgroundDrawable( getContext().getDrawable( R.drawable.slider_background ) );
         loadingDialog.getWindow().setLayout( ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT );
         loadingDialog.show();
+        /// loading
 
 //        wishlistModelList.add( new WishlistModel( R.mipmap.ic_14_plus, "Iphone 14 pro", 1, "5", 145, "Rs.89,999/-", "Rs.98,999/-", "Case on Delivery" ) );
 

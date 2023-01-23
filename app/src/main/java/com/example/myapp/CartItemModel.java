@@ -6,10 +6,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 public class CartItemModel {
     public static final int CART_ITEM = 0;
@@ -26,17 +30,19 @@ public class CartItemModel {
     private int type;
 
     //////cart item
-    private int productImage;
+    private String productID;
+    private String productImage;
     private String productTitle;
-    private int freeCoupens;
+    private Long freeCoupens;
     private String productPrice;
     private String cuttedPrice;
-    private int productQuantiy;
-    private int offersApplied;
-    private int copensApplied;
+    private Long productQuantiy;
+    private Long offersApplied;
+    private Long copensApplied;
 
-    public CartItemModel(int type, int productImage, String productTitle, int freeCoupens, String productPrice, String cuttedPrice, int productQuantiy, int offersApplied, int copensApplied) {
+    public CartItemModel(int type, String productID, String productImage, String productTitle, Long freeCoupens, String productPrice, String cuttedPrice, Long productQuantiy, Long offersApplied, Long copensApplied) {
         this.type = type;
+        this.productID = productID;
         this.productImage = productImage;
         this.productTitle = productTitle;
         this.freeCoupens = freeCoupens;
@@ -47,11 +53,19 @@ public class CartItemModel {
         this.copensApplied = copensApplied;
     }
 
-    public int getProductImage() {
+    public String getProductID() {
+        return productID;
+    }
+
+    public void setProductID(String productID) {
+        this.productID = productID;
+    }
+
+    public String getProductImage() {
         return productImage;
     }
 
-    public void setProductImage(int productImage) {
+    public void setProductImage(String productImage) {
         this.productImage = productImage;
     }
 
@@ -63,11 +77,11 @@ public class CartItemModel {
         this.productTitle = productTitle;
     }
 
-    public int getFreeCoupens() {
+    public Long getFreeCoupens() {
         return freeCoupens;
     }
 
-    public void setFreeCoupens(int freeCoupens) {
+    public void setFreeCoupens(Long freeCoupens) {
         this.freeCoupens = freeCoupens;
     }
 
@@ -87,30 +101,31 @@ public class CartItemModel {
         this.cuttedPrice = cuttedPrice;
     }
 
-    public int getProductQuantiy() {
+    public Long getProductQuantiy() {
         return productQuantiy;
     }
 
-    public void setProductQuantiy(int productQuantiy) {
+    public void setProductQuantiy(Long productQuantiy) {
         this.productQuantiy = productQuantiy;
     }
 
-    public int getOffersApplied() {
+    public Long getOffersApplied() {
         return offersApplied;
     }
 
-    public void setOffersApplied(int offersApplied) {
+    public void setOffersApplied(Long offersApplied) {
         this.offersApplied = offersApplied;
     }
 
-    public int getCopensApplied() {
+    public Long getCopensApplied() {
         return copensApplied;
     }
 
-    public void setCopensApplied(int copensApplied) {
+    public void setCopensApplied(Long copensApplied) {
         this.copensApplied = copensApplied;
     }
-//////cart item
+
+    //////cart item
 
     //////cart total
     private String totalItems;
@@ -180,6 +195,8 @@ public class CartItemModel {
         private TextView copenApplied;
         private TextView productQuantity;
 
+        private LinearLayout deleteBtn;
+
         public CartItemViewholder(@NonNull View itemView) {
             super( itemView );
             productImage = itemView.findViewById( R.id.product_image );
@@ -191,10 +208,11 @@ public class CartItemModel {
             offersApplied = itemView.findViewById( R.id.offers_applied );
             copenApplied = itemView.findViewById( R.id.coupens_applied );
             productQuantity = itemView.findViewById( R.id.product_quantity );
+            deleteBtn = itemView.findViewById( R.id.remove_item_btn );
         }
 
-        void setItemDetails(int resource, String title, int freeCopensNo, String productPriceText, String cuttedPriceText, int offersAppliedNo, int offersApplied) {
-            productImage.setImageResource( resource );
+        void setItemDetails(String productID, String resource, String title, Long freeCopensNo, String productPriceText, String cuttedPriceText, Long offersAppliedNo, Long offersApplied,int position) {
+            Glide.with( itemView.getContext() ).load( resource ).apply( new RequestOptions().placeholder( R.drawable.ic_baseline_image_24 ) ).into( productImage );
             productTitle.setText( title );
             if (freeCopensNo > 0) {
                 freeCopensIcon.setVisibility( View.VISIBLE );
@@ -221,7 +239,7 @@ public class CartItemModel {
                 public void onClick(View view) {
                     Dialog quantityDialog = new Dialog( itemView.getContext() );
                     quantityDialog.setContentView( R.layout.quantity_dialog );
-                    quantityDialog.getWindow().setLayout( ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT );
+                    quantityDialog.getWindow().setLayout( ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT );
                     quantityDialog.setCancelable( false );
                     EditText quantityNo = quantityDialog.findViewById( R.id.quantity_no );
                     Button cancelBtn = quantityDialog.findViewById( R.id.quantity_cancel_btn );
@@ -241,6 +259,18 @@ public class CartItemModel {
                         }
                     } );
                     quantityDialog.show();
+                }
+            } );
+
+            deleteBtn.setOnClickListener( new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (!PRoductDEtailshActivity.running_cart_query) {
+                        PRoductDEtailshActivity.running_cart_query = true;
+
+                        DBqueries.removeFromCart( position,itemView.getContext() );
+
+                    }
                 }
             } );
         }

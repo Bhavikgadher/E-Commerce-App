@@ -1,6 +1,7 @@
 package com.example.myapp;
 
 import static com.example.myapp.utils.Constants.FB_LIST_SIZE;
+import static com.example.myapp.utils.Constants.FB_MY_CART;
 import static com.example.myapp.utils.Constants.FB_MY_RATINGS;
 import static com.example.myapp.utils.Constants.FB_MY_WISHLIST;
 import static com.example.myapp.utils.Constants.FB_USER_DATA;
@@ -227,15 +228,21 @@ public class SingUpFragment extends Fragment {
 
                                                         Map<String, Object> ratingsMap = new HashMap<>();
                                                         ratingsMap.put( FB_LIST_SIZE, (long) 0 );
+
+                                                        Map<String, Object> cartMap = new HashMap<>();
+                                                        cartMap.put( FB_LIST_SIZE, (long) 0 );
+
                                                         // MAPS
 
                                                         List<String> documentNames = new ArrayList<>();
                                                         documentNames.add( FB_MY_WISHLIST );
                                                         documentNames.add( FB_MY_RATINGS );
+                                                        documentNames.add( FB_MY_CART );
 
                                                         List<Map<String, Object>> documentFields = new ArrayList<>();
                                                         documentFields.add( wishlistMap );
                                                         documentFields.add( ratingsMap );
+                                                        documentFields.add( cartMap );
 
                                                         for (int i = 0; i < documentNames.size(); i++) {
 
@@ -244,7 +251,7 @@ public class SingUpFragment extends Fragment {
                                                                 @Override
                                                                 public void onComplete(@NonNull Task<Void> task) {
                                                                     if (task.isSuccessful()) {
-                                                                        if (finalI == documentNames.size() -1) {
+                                                                        if (finalI == documentNames.size() - 1) {
                                                                             mainIntent();
                                                                         }
                                                                     } else {
