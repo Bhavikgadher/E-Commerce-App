@@ -31,6 +31,7 @@
             android:textAlignment="center"
             android:text="0"
             android:gravity="center"
+            android:visibility="invisible"
             android:background="@drawable/badge_count"
             android:textColor="@color/black"
             android:textSize="10sp"

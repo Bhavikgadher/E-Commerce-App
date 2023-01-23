@@ -31,7 +31,6 @@ public class DeliveryActivity extends AppCompatActivity {
 //     deliveryRecyclerView = findViewById( R.id.rv_delivery );
 
         List<CartItemModel> cartItemModelList = new ArrayList<>();
-        cartItemModelList.add( new CartItemModel( 1, "Iphone(3 items)", "Rs.1,20,999/-", "Free", "Rs.1,20,999/-", "Rs.9999/-" ) );
 
         CartAdapter cartAdapter = new CartAdapter( cartItemModelList );
         binding.rvDelivery.setAdapter( cartAdapter );

@@ -1,7 +1,6 @@
 package com.example.myapp;
 
 import static com.example.myapp.PRoductDEtailshActivity.addToWishListBtn;
-import static com.example.myapp.PRoductDEtailshActivity.cartItem;
 import static com.example.myapp.PRoductDEtailshActivity.initialRating;
 import static com.example.myapp.PRoductDEtailshActivity.productId;
 import static com.example.myapp.PRoductDEtailshActivity.setRating;
@@ -42,6 +41,8 @@ import static com.example.myapp.utils.Constants.FB_VIEW_TYPE;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -314,7 +315,7 @@ public class DBqueries {
         }
     }
 
-    public static void loadCartList(Context context, Dialog dialog, boolean loadProductData) {
+    public static void loadCartList(Context context, Dialog dialog, boolean loadProductData, TextView badgeCount) {
         cartList.clear();
         firebaseFirestore.collection( FB_USERS ).document( FirebaseAuth.getInstance().getUid() ).collection( FB_USER_DATA ).document( FB_MY_CART )
                 .get().addOnCompleteListener( new OnCompleteListener<DocumentSnapshot>() {
@@ -337,7 +338,11 @@ public class DBqueries {
                                                 @Override
                                                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                     if (task.isSuccessful()) {
-                                                        cartItemModelList.add(
+                                                        int index = 0;
+                                                        if (cartList.size() >= 2) {
+                                                            index = cartList.size() - 2;
+                                                        }
+                                                        cartItemModelList.add( index,
                                                                 new CartItemModel( CartItemModel.CART_ITEM,
                                                                         productId,
                                                                         task.getResult().get( "product_image_1", String.class ),
@@ -348,6 +353,12 @@ public class DBqueries {
                                                                         (long) 1,
                                                                         (long) 0,
                                                                         (long) 0 ) );
+                                                        if (cartList.size() == 1) {
+                                                            cartItemModelList.add( new CartItemModel( CartItemModel.TOTAL_AMOUNT ) );
+                                                        }
+                                                        if (cartList.size() == 0){
+                                                            cartItemModelList.clear();
+                                                        }
                                                         MyCartFragment.cartAdapter.notifyDataSetChanged();
 
                                                     } else {
@@ -357,6 +368,16 @@ public class DBqueries {
                                                 }
                                             } );
                                 }
+                            }
+                            if (cartList.size() != 0) {
+                                badgeCount.setVisibility( View.VISIBLE );
+                            } else {
+                                badgeCount.setVisibility( View.INVISIBLE );
+                            }
+                            if (DBqueries.cartList.size() < 99) {
+                                badgeCount.setText( String.valueOf( DBqueries.cartList.size() ) );
+                            } else {
+                                badgeCount.setText( "99" );
                             }
                         } else {
                             String error = task.getException().getMessage();
@@ -385,10 +406,10 @@ public class DBqueries {
                             cartItemModelList.remove( index );
                             MyCartFragment.cartAdapter.notifyDataSetChanged();
                         }
-//                        PRoductDEtailshActivity.ALREADY_ADDED_TO_CART = false;
-                        if (cartItem != null) {
-                            cartItem.setActionView( null );
+                        if (cartList.size() == 0){
+                            cartItemModelList.clear();
                         }
+//                        PRoductDEtailshActivity.ALREADY_ADDED_TO_CART = false;
                         Toast.makeText( context, "Removed Successfully!", Toast.LENGTH_SHORT ).show();
                     } else {
                         cartList.add( index, removedProductId );
@@ -405,6 +426,7 @@ public class DBqueries {
         loadedCategoriesNames.clear();
         wishList.clear();
         wishlistModelList.clear();
+        cartItemModelList.clear();
     }
 
 }

@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
+import java.text.DecimalFormat;
+
 public class CartItemModel {
     public static final int CART_ITEM = 0;
     public static final int TOTAL_AMOUNT = 1;
@@ -128,61 +130,12 @@ public class CartItemModel {
     //////cart item
 
     //////cart total
-    private String totalItems;
-    private String totalItemPrice;
-    private String saveAmount;
-    private String deliveryPrice;
-    private String totalAmount;
 
-    public CartItemModel(int type, String totalItems, String totalItemPrice, String saveAmount, String deliveryPrice, String totalAmount) {
+    public CartItemModel(int type) {
         this.type = type;
-        this.totalItems = totalItems;
-        this.totalItemPrice = totalItemPrice;
-        this.saveAmount = saveAmount;
-        this.deliveryPrice = deliveryPrice;
-        this.totalAmount = totalAmount;
     }
 
-    public String getTotalItems() {
-        return totalItems;
-    }
-
-    public void setTotalItems(String totalItems) {
-        this.totalItems = totalItems;
-    }
-
-    public String getTotalItemPrice() {
-        return totalItemPrice;
-    }
-
-    public void setTotalItemPrice(String totalItemPrice) {
-        this.totalItemPrice = totalItemPrice;
-    }
-
-    public String getSaveAmount() {
-        return saveAmount;
-    }
-
-    public void setSaveAmount(String saveAmount) {
-        this.saveAmount = saveAmount;
-    }
-
-    public String getDeliveryPrice() {
-        return deliveryPrice;
-    }
-
-    public void setDeliveryPrice(String deliveryPrice) {
-        this.deliveryPrice = deliveryPrice;
-    }
-
-    public String getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(String totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-//////cart total
+    //////cart total
 
     public static class CartItemViewholder extends RecyclerView.ViewHolder {
         private ImageView productImage;
@@ -211,7 +164,7 @@ public class CartItemModel {
             deleteBtn = itemView.findViewById( R.id.remove_item_btn );
         }
 
-        void setItemDetails(String productID, String resource, String title, Long freeCopensNo, String productPriceText, String cuttedPriceText, Long offersAppliedNo, Long offersApplied,int position) {
+        void setItemDetails(String productID, String resource, String title, Long freeCopensNo, String productPriceText, String cuttedPriceText, Long offersAppliedNo, Long offersApplied, int position) {
             Glide.with( itemView.getContext() ).load( resource ).apply( new RequestOptions().placeholder( R.drawable.ic_baseline_image_24 ) ).into( productImage );
             productTitle.setText( title );
             if (freeCopensNo > 0) {
@@ -268,7 +221,7 @@ public class CartItemModel {
                     if (!PRoductDEtailshActivity.running_cart_query) {
                         PRoductDEtailshActivity.running_cart_query = true;
 
-                        DBqueries.removeFromCart( position,itemView.getContext() );
+                        DBqueries.removeFromCart( position, itemView.getContext() );
 
                     }
                 }
@@ -293,12 +246,17 @@ public class CartItemModel {
             savedAmount = itemView.findViewById( R.id.saved_amount );
         }
 
-        void setTotalAmount(String totalItemText, String totalItemPriceText, String deliveryPriceText, String totalAmountText, String savedAmountText) {
-            totalItems.setText( totalItemText );
-            totalItemsPrice.setText( totalItemPriceText );
-            deliveryPrice.setText( deliveryPriceText );
-            totalAmount.setText( totalAmountText );
-            savedAmount.setText( savedAmountText );
+        void setTotalAmount(int totalItemText, int totalItemPriceText, String deliveryPriceText, int totalAmountText, int savedAmountText) {
+            DecimalFormat formatter = new DecimalFormat("#,###.00");
+            totalItems.setText( "Price(" + formatter.format( totalItemText ) + " items )" );
+            totalItemsPrice.setText( "Rs." + formatter.format( totalItemPriceText ) + "/-" );
+            if (deliveryPriceText.equals( "Free" )) {
+                deliveryPrice.setText( deliveryPriceText );
+            } else {
+                deliveryPrice.setText( "Rs." + deliveryPriceText + "/-" );
+            }
+            totalAmount.setText( "Rs." + totalAmountText + "/-" );
+            savedAmount.setText( "You Saved Rs." + savedAmountText + "/- on this order." );
         }
     }
 }

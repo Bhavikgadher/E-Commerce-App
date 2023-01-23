@@ -1,5 +1,7 @@
 package com.example.myapp;
 
+import static java.lang.Integer.parseInt;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,13 +62,25 @@ public class CartAdapter extends RecyclerView.Adapter {
                 ((CartItemModel.CartItemViewholder) holder).setItemDetails( productID, resource, title, freeCopens, productPrice, cuttedPrice, productQuantiy, offersApplied, position );
                 break;
             case CartItemModel.TOTAL_AMOUNT:
-                String totalItems = cartItemModelList.get( position ).getTotalItems();
-                String totalItemPrice = cartItemModelList.get( position ).getTotalItemPrice();
-                String deliveryPrice = cartItemModelList.get( position ).getDeliveryPrice();
-                String totalAmount = cartItemModelList.get( position ).getTotalAmount();
-                String saveAmount = cartItemModelList.get( position ).getSaveAmount();
-
-                ((CartItemModel.CartTotalAmountViewholder) holder).setTotalAmount( totalItems, totalItemPrice, deliveryPrice, totalAmount, saveAmount );
+                int totalItems = 0;
+                int totalItemsPrice = 0;
+                String deliveryPrice;
+                int totalAmount;
+                int saveAmount = 0 ;
+                for (int i = 0; i < cartItemModelList.size(); i++) {
+                    if (cartItemModelList.get( i ).getType() == CartItemModel.CART_ITEM) {
+                        totalItems++;
+                        totalItemsPrice = parseInt( totalItemsPrice + cartItemModelList.get( i ).getProductPrice() );//, na chale okk try again done done birooo
+                    }
+                }
+                if (totalItemsPrice > 500) {
+                    deliveryPrice = "Free";
+                    totalAmount = totalItemsPrice;
+                } else {
+                    deliveryPrice = "60";
+                    totalAmount = totalItemsPrice + 60;
+                }
+                ((CartItemModel.CartTotalAmountViewholder) holder).setTotalAmount( totalItems, totalItemsPrice, deliveryPrice, totalAmount, saveAmount );
                 break;
             default:
                 return;
@@ -82,5 +96,4 @@ public class CartAdapter extends RecyclerView.Adapter {
     public int getItemCount() {
         return cartItemModelList.size();
     }
-
 }
