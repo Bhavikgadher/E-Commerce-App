@@ -13,6 +13,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -47,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar( binding.appBarMain.toolbar );
         window = getWindow();
         window.addFlags( WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS );
-        drawerLayout = findViewById(R.id.drawer_layout);
+        drawerLayout = findViewById( R.id.drawer_layout );
 
         // to make the Navigation drawer icon always appear on the action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled( true );
@@ -102,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             binding.navView.getMenu().getItem( binding.navView.getMenu().size() - 1 ).setEnabled( true );
         }
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -110,6 +113,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (getCurrentFragment() instanceof HomeFragment) {
             //getSupportActionBar().setDisplayShowTitleEnabled( false );
             getMenuInflater().inflate( R.menu.main, menu );
+
+            MenuItem cartItem = menu.findItem( R.id.main_cart_icon );
+            if (DBqueries.cartList.size() > 0) {
+                cartItem.setActionView( R.layout.badge_layout );
+                ImageView badgeIcon = cartItem.getActionView().findViewById( R.id.badge_icon );
+                badgeIcon.setImageResource( R.drawable.ic_baseline_shopping_cart_24 );
+                TextView badgeCount = cartItem.getActionView().findViewById( R.id.badge_count );
+                if (DBqueries.cartList.size() < 99) {
+                    badgeCount.setText( String.valueOf( DBqueries.cartList.size() ) );
+                } else {
+                    badgeCount.setText( "99" );
+                }
+
+                cartItem.getActionView().setOnClickListener( new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (currentUser == null) {
+                            signInDialog.show();
+                        } else {
+                            gotoFragment( "My Cart", new MyCartFragment() );
+                        }
+                    }
+                } );
+            } else {
+                cartItem.setActionView( null );
+            }
         }
         return true;
     }
@@ -182,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             } else if (id == R.id.nav_sign_out) {
                 FirebaseAuth.getInstance().signOut();
                 DBqueries.clearData();
-                Intent registerIntent = new Intent(MainActivity.this,RegisterActivity.class);
+                Intent registerIntent = new Intent( MainActivity.this, RegisterActivity.class );
                 startActivity( registerIntent );
                 finish();
             }

@@ -1,6 +1,7 @@
 package com.example.myapp;
 
 import static com.example.myapp.PRoductDEtailshActivity.addToWishListBtn;
+import static com.example.myapp.PRoductDEtailshActivity.cartItem;
 import static com.example.myapp.PRoductDEtailshActivity.initialRating;
 import static com.example.myapp.PRoductDEtailshActivity.productId;
 import static com.example.myapp.PRoductDEtailshActivity.setRating;
@@ -273,7 +274,7 @@ public class DBqueries {
                         if (addToWishListBtn != null) {
                             addToWishListBtn.setSupportImageTintList( context.getResources().getColorStateList( R.color.red ) );
                         }
-                        wishList.add( index,removedProductId );
+                        wishList.add( index, removedProductId );
                         String error = task.getException().getMessage();
                         Toast.makeText( context, error, Toast.LENGTH_SHORT ).show();
                     }
@@ -313,7 +314,7 @@ public class DBqueries {
         }
     }
 
-    public static void loadCartList(Context context,Dialog dialog, boolean loadProductData) {
+    public static void loadCartList(Context context, Dialog dialog, boolean loadProductData) {
         cartList.clear();
         firebaseFirestore.collection( FB_USERS ).document( FirebaseAuth.getInstance().getUid() ).collection( FB_USER_DATA ).document( FB_MY_CART )
                 .get().addOnCompleteListener( new OnCompleteListener<DocumentSnapshot>() {
@@ -363,12 +364,12 @@ public class DBqueries {
                         }
                         dialog.dismiss();
                     }
-                });
+                } );
 
 
     }
 
-    public static void removeFromCart(int index,Context context){
+    public static void removeFromCart(int index, Context context) {
         String removedProductId = cartList.get( index );
         cartList.remove( index );
         Map<String, Object> updateCartList = new HashMap<>();
@@ -384,10 +385,13 @@ public class DBqueries {
                             cartItemModelList.remove( index );
                             MyCartFragment.cartAdapter.notifyDataSetChanged();
                         }
-                        PRoductDEtailshActivity.ALREADY_ADDED_TO_CART = false;
+//                        PRoductDEtailshActivity.ALREADY_ADDED_TO_CART = false;
+                        if (cartItem != null) {
+                            cartItem.setActionView( null );
+                        }
                         Toast.makeText( context, "Removed Successfully!", Toast.LENGTH_SHORT ).show();
                     } else {
-                        cartList.add( index,removedProductId );
+                        cartList.add( index, removedProductId );
                         String error = task.getException().getMessage();
                         Toast.makeText( context, error, Toast.LENGTH_SHORT ).show();
                     }
