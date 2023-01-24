@@ -5,6 +5,7 @@ import static java.lang.Integer.parseInt;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,10 +14,14 @@ import java.util.List;
 
 public class CartAdapter extends RecyclerView.Adapter {
     private List<CartItemModel> cartItemModelList;
-//    private int lastPosition = -1;
+    //    private int lastPosition = -1;
+    public static TextView cartTotalAmount;
+    public static boolean showDeleteBtn;
 
-    public CartAdapter(List<CartItemModel> cartItemModelList) {
+    public CartAdapter(List<CartItemModel> cartItemModelList,TextView cartTotalAmount , boolean showDeleteBtn) {
         this.cartItemModelList = cartItemModelList;
+        this.cartTotalAmount = cartTotalAmount;
+        this.showDeleteBtn = showDeleteBtn;
     }
 
     @Override
@@ -66,7 +71,7 @@ public class CartAdapter extends RecyclerView.Adapter {
                 int totalItemsPrice = 0;
                 String deliveryPrice;
                 int totalAmount;
-                int saveAmount = 0 ;
+                int saveAmount = 0;
                 for (int i = 0; i < cartItemModelList.size(); i++) {
                     if (cartItemModelList.get( i ).getType() == CartItemModel.CART_ITEM) {
                         totalItems++;

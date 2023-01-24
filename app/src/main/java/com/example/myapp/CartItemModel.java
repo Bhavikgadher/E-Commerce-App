@@ -1,5 +1,8 @@
 package com.example.myapp;
 
+import static com.example.myapp.CartAdapter.cartTotalAmount;
+import static com.example.myapp.CartAdapter.showDeleteBtn;
+
 import android.app.Dialog;
 import android.view.View;
 import android.view.ViewGroup;
@@ -215,6 +218,12 @@ public class CartItemModel {
                 }
             } );
 
+            if (showDeleteBtn){
+                deleteBtn.setVisibility( View.VISIBLE );
+            }else{
+                deleteBtn.setVisibility( View.GONE );
+            }
+
             deleteBtn.setOnClickListener( new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -256,6 +265,7 @@ public class CartItemModel {
                 deliveryPrice.setText( "Rs." + deliveryPriceText + "/-" );
             }
             totalAmount.setText( "Rs." + totalAmountText + "/-" );
+            cartTotalAmount.setText( "Rs." + totalAmountText + "/-" );
             savedAmount.setText( "You Saved Rs." + savedAmountText + "/- on this order." );
         }
     }

@@ -34,6 +34,7 @@
             android:id="@+id/rv_delivery"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:background="@color/RecyclerViewBackGround"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@+id/shipping_content"

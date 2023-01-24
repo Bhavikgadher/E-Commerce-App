@@ -28,6 +28,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.myapp.databinding.ActivityMainBinding;
 import com.example.myapp.ui.gallery.GalleryFragment;
 import com.example.myapp.ui.home.HomeFragment;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,6 +43,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FirebaseUser currentUser;
     public static DrawerLayout drawerLayout;
     private TextView badgeCount;
+    private int scrollFlags;
+    private AppBarLayout.LayoutParams params;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +53,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar( binding.appBarMain.toolbar );
         window = getWindow();
         window.addFlags( WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS );
+
+        params = (AppBarLayout.LayoutParams) binding.appBarMain.toolbar.getLayoutParams();
+        scrollFlags = params.getScrollFlags();
+
         drawerLayout = findViewById( R.id.drawer_layout );
 
         // to make the Navigation drawer icon always appear on the action bar
@@ -185,6 +192,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         invalidateOptionsMenu();
         setFragment( fragment );
 //        binding.navView.getMenu().getItem( 3 ).setChecked( true );
+        params.setScrollFlags(0);
+        params.setScrollFlags(scrollFlags);
+
     }
 
     @Override

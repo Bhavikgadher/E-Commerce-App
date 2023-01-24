@@ -11,9 +11,6 @@ import androidx.databinding.DataBindingUtil;
 
 import com.example.myapp.databinding.ActivityDeliveryBinding;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class DeliveryActivity extends AppCompatActivity {
 
     private ActivityDeliveryBinding binding;
@@ -28,11 +25,7 @@ public class DeliveryActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled( true );
         getSupportActionBar().setTitle( "Delivery" );
 
-//     deliveryRecyclerView = findViewById( R.id.rv_delivery );
-
-        List<CartItemModel> cartItemModelList = new ArrayList<>();
-
-        CartAdapter cartAdapter = new CartAdapter( cartItemModelList );
+        CartAdapter cartAdapter = new CartAdapter( DBqueries.cartItemModelList,binding.totalCartAmount,false);
         binding.rvDelivery.setAdapter( cartAdapter );
         cartAdapter.notifyDataSetChanged();
 
@@ -45,6 +38,14 @@ public class DeliveryActivity extends AppCompatActivity {
                 startActivity( myAddressesIntent );
             }
         } );
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        binding.shippingContent.fullName.setText( DBqueries.addressesModelList.get( DBqueries.selectedAddress ).getFullname() );
+        binding.shippingContent.address.setText( DBqueries.addressesModelList.get( DBqueries.selectedAddress ).getAddress() );
+        binding.shippingContent.pincode.setText( DBqueries.addressesModelList.get( DBqueries.selectedAddress ).getPincode() );
     }
 
     @Override

@@ -65,11 +65,17 @@ public class Constants {
     public static String FB_MY_WISHLIST = "MY_WISHLIST";
     public static String FB_LIST_SIZE = "list_size";
     public static String FB_MY_CART = "MY_CART";
+    public static String FB_MY_ADDRESSES = "MY_ADDRESSES";//?2min jarav.
 
     /// rating
     public static String FB_MY_RATINGS = "MY_RATINGS";
     public static String FB_RATING_ = "rating_";
 
+    /// Address
+    public static String FB_FULLNAME_ = "fullname_";
+    public static String FB_ADDRESS_ = "address_";
+    public static String FB_PINCODE_ = "pincode_";
+    public static String FB_SELECTED_ = "selected_";
 
 }
 

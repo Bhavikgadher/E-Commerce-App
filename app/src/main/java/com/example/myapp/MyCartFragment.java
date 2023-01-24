@@ -3,7 +3,6 @@ package com.example.myapp;
 import static com.example.myapp.DBqueries.cartItemModelList;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +23,7 @@ public class MyCartFragment extends Fragment {
     private Button continueBtn;
     private Dialog loadingDialog;
     public static CartAdapter cartAdapter;
+    private TextView totalAmount;
 
 
     @Override
@@ -38,6 +38,7 @@ public class MyCartFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate( R.layout.fragment_my_cart, container, false );
         continueBtn = view.findViewById( R.id.cart_continue_btn );
+        totalAmount = view.findViewById( R.id.total_cart_amount );
 
         loadingDialog = new Dialog( getContext() );
         loadingDialog.setContentView( R.layout.loading_progress_dialog );
@@ -47,23 +48,20 @@ public class MyCartFragment extends Fragment {
         loadingDialog.show();
 
         cartItemsRecyclerView = view.findViewById( R.id.rv_cart_items );
-        if (cartItemModelList.size() == 0){
+        if (cartItemModelList.size() == 0) {
             DBqueries.cartList.clear();
-            DBqueries.loadCartList( getContext(),loadingDialog,true,new TextView( getContext() ) );
-        }else {
+            DBqueries.loadCartList( getContext(), loadingDialog, true, new TextView( getContext() ) );
+        } else {
             loadingDialog.dismiss();
         }
 
-        cartAdapter = new CartAdapter( cartItemModelList );
+        cartAdapter = new CartAdapter( cartItemModelList, totalAmount,true );
         cartItemsRecyclerView.setAdapter( cartAdapter );
         cartAdapter.notifyDataSetChanged();
 
-        continueBtn.setOnClickListener( new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent deliveryIntent = new Intent( getContext(), AddAdressActivity.class );
-                getContext().startActivity( deliveryIntent );
-            }
+        continueBtn.setOnClickListener( view1 -> {
+            loadingDialog.show();
+            DBqueries.loadAddresses( getContext(),loadingDialog );
         } );
 
         return view;

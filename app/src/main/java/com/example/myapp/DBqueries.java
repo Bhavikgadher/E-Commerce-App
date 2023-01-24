@@ -4,6 +4,7 @@ import static com.example.myapp.PRoductDEtailshActivity.addToWishListBtn;
 import static com.example.myapp.PRoductDEtailshActivity.initialRating;
 import static com.example.myapp.PRoductDEtailshActivity.productId;
 import static com.example.myapp.PRoductDEtailshActivity.setRating;
+import static com.example.myapp.utils.Constants.FB_ADDRESS_;
 import static com.example.myapp.utils.Constants.FB_AVERAGE_RATING;
 import static com.example.myapp.utils.Constants.FB_AVERAGE_RATING_;
 import static com.example.myapp.utils.Constants.FB_BACKGROUND;
@@ -15,12 +16,15 @@ import static com.example.myapp.utils.Constants.FB_CUTTED_PRICE;
 import static com.example.myapp.utils.Constants.FB_CUTTED_PRICE_;
 import static com.example.myapp.utils.Constants.FB_FREE_COUPENS;
 import static com.example.myapp.utils.Constants.FB_FREE_COUPENS_;
+import static com.example.myapp.utils.Constants.FB_FULLNAME_;
 import static com.example.myapp.utils.Constants.FB_LIST_SIZE;
+import static com.example.myapp.utils.Constants.FB_MY_ADDRESSES;
 import static com.example.myapp.utils.Constants.FB_MY_CART;
 import static com.example.myapp.utils.Constants.FB_MY_RATINGS;
 import static com.example.myapp.utils.Constants.FB_MY_WISHLIST;
 import static com.example.myapp.utils.Constants.FB_NO_OF_BANNERS;
 import static com.example.myapp.utils.Constants.FB_NO_OF_PRODUCTS;
+import static com.example.myapp.utils.Constants.FB_PINCODE_;
 import static com.example.myapp.utils.Constants.FB_PRODUCT_FULL_TITLE_;
 import static com.example.myapp.utils.Constants.FB_PRODUCT_ID_;
 import static com.example.myapp.utils.Constants.FB_PRODUCT_IMAGE_;
@@ -31,6 +35,7 @@ import static com.example.myapp.utils.Constants.FB_PRODUCT_SUBTITLE_;
 import static com.example.myapp.utils.Constants.FB_PRODUCT_TITLE;
 import static com.example.myapp.utils.Constants.FB_PRODUCT_TITLE_;
 import static com.example.myapp.utils.Constants.FB_RATING_;
+import static com.example.myapp.utils.Constants.FB_SELECTED_;
 import static com.example.myapp.utils.Constants.FB_STRIP_AD_BANNER;
 import static com.example.myapp.utils.Constants.FB_SUB_COLLECTION_TD;
 import static com.example.myapp.utils.Constants.FB_TOTAL_RATINGS;
@@ -41,6 +46,7 @@ import static com.example.myapp.utils.Constants.FB_VIEW_TYPE;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,6 +72,8 @@ import java.util.Objects;
 
 public class DBqueries {
 
+    public static boolean addressesSelected = false;
+
     public static FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
 
     public static List<CategoryModel> categoryModelList = new ArrayList<>();
@@ -78,6 +86,10 @@ public class DBqueries {
 
     public static List<String> cartList = new ArrayList<>();
     public static List<CartItemModel> cartItemModelList = new ArrayList<>();
+
+    public static int selectedAddress = -1;
+    public static List<AddressesModel> addressesModelList = new ArrayList<>();
+
 
     public static List<String> myRatedIds = new ArrayList<>();
     public static List<Long> myRating = new ArrayList<>();
@@ -356,7 +368,7 @@ public class DBqueries {
                                                         if (cartList.size() == 1) {
                                                             cartItemModelList.add( new CartItemModel( CartItemModel.TOTAL_AMOUNT ) );
                                                         }
-                                                        if (cartList.size() == 0){
+                                                        if (cartList.size() == 0) {
                                                             cartItemModelList.clear();
                                                         }
                                                         MyCartFragment.cartAdapter.notifyDataSetChanged();
@@ -406,7 +418,7 @@ public class DBqueries {
                             cartItemModelList.remove( index );
                             MyCartFragment.cartAdapter.notifyDataSetChanged();
                         }
-                        if (cartList.size() == 0){
+                        if (cartList.size() == 0) {
                             cartItemModelList.clear();
                         }
 //                        PRoductDEtailshActivity.ALREADY_ADDED_TO_CART = false;
@@ -417,6 +429,37 @@ public class DBqueries {
                         Toast.makeText( context, error, Toast.LENGTH_SHORT ).show();
                     }
                     PRoductDEtailshActivity.running_cart_query = false;
+                } );
+    }
+
+    public static void loadAddresses(Context context, Dialog loadingDialog) {
+        addressesModelList.clear();
+        firebaseFirestore.collection( FB_USERS ).document( FirebaseAuth.getInstance().getUid() ).collection( FB_USER_DATA )
+                .document( FB_MY_ADDRESSES ).get().addOnCompleteListener( task -> {
+                    if (task.isSuccessful()) {
+                        Intent deliveryIntent;
+                        DocumentSnapshot result = task.getResult();
+                        if (result != null && result.contains( FB_LIST_SIZE ) && result.getLong( FB_LIST_SIZE ) != 0) {
+                            for (long i = 1; i < result.getLong( FB_LIST_SIZE ) + 1; i++) {
+                                addressesModelList.add( new AddressesModel( task.getResult().get( FB_FULLNAME_ + i, String.class ),
+                                        task.getResult().get( FB_ADDRESS_ + i, String.class ),
+                                        task.getResult().get( FB_PINCODE_ + i, String.class ),
+                                        (Boolean) task.getResult().get( FB_SELECTED_ + i ) ) );
+                                if ((Boolean) task.getResult().get( FB_SELECTED_ + i )) {
+                                    selectedAddress = Integer.parseInt( String.valueOf( i - 1 ) );
+                                }
+                            }
+                            deliveryIntent = new Intent( context, DeliveryActivity.class );
+                        } else {
+                            deliveryIntent = new Intent( context, AddAdressActivity.class );
+                            deliveryIntent.putExtra( "INTENT","deliveryIntent" );
+                        }
+                        context.startActivity( deliveryIntent );
+                    } else {
+                        String error = task.getException().getMessage();
+                        Toast.makeText( context, error, Toast.LENGTH_SHORT ).show();
+                    }
+                    loadingDialog.dismiss();
                 } );
     }
 
