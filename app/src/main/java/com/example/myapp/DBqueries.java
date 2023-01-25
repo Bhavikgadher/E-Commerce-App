@@ -49,6 +49,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -328,7 +329,7 @@ public class DBqueries {
         }
     }
 
-    public static void loadCartList(Context context, Dialog dialog, boolean loadProductData, TextView badgeCount) {
+    public static void loadCartList(Context context, Dialog dialog, boolean loadProductData, TextView badgeCount,TextView cartTotalAmount) {
         cartList.clear();
         firebaseFirestore.collection( FB_USERS ).document( FirebaseAuth.getInstance().getUid() ).collection( FB_USER_DATA ).document( FB_MY_CART )
                 .get().addOnCompleteListener( new OnCompleteListener<DocumentSnapshot>() {
@@ -369,6 +370,8 @@ public class DBqueries {
                                                                         (boolean) task.getResult().get( FB_IN_STOCK ) ) );
                                                         if (cartList.size() == 1) {
                                                             cartItemModelList.add( new CartItemModel( CartItemModel.TOTAL_AMOUNT ) );
+                                                            LinearLayout parent = (LinearLayout) cartTotalAmount.getParent().getParent();
+                                                            parent.setVisibility( View.VISIBLE );
                                                         }
                                                         if (cartList.size() == 0) {
                                                             cartItemModelList.clear();
@@ -404,7 +407,7 @@ public class DBqueries {
 
     }
 
-    public static void removeFromCart(int index, Context context) {
+    public static void removeFromCart(int index, Context context,TextView cartTotalAmount) {
         String removedProductId = cartList.get( index );
         cartList.remove( index );
         Map<String, Object> updateCartList = new HashMap<>();
@@ -421,6 +424,8 @@ public class DBqueries {
                             MyCartFragment.cartAdapter.notifyDataSetChanged();
                         }
                         if (cartList.size() == 0) {
+                            LinearLayout parent = (LinearLayout) cartTotalAmount.getParent().getParent();
+                            parent.setVisibility( View.GONE );
                             cartItemModelList.clear();
                         }
 //                        PRoductDEtailshActivity.ALREADY_ADDED_TO_CART = false;

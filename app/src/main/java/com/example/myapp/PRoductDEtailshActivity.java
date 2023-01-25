@@ -200,6 +200,9 @@ public class PRoductDEtailshActivity extends AppCompatActivity {
                         if (DBqueries.myRating.size() == 0) {
                             DBqueries.loadRatingList( PRoductDEtailshActivity.this );
                         }
+                        if (DBqueries.cartList.size() == 0){
+                            DBqueries.loadCartList( PRoductDEtailshActivity.this,loadingDialog,false,badgeCount,new TextView( PRoductDEtailshActivity.this ) );
+                        }
                         if (DBqueries.wishList.size() == 0) {
                             DBqueries.loadWishlist( PRoductDEtailshActivity.this, loadingDialog, false );
                         } else {
@@ -246,7 +249,7 @@ public class PRoductDEtailshActivity extends AppCompatActivity {
                                         firebaseFirestore.collection( FB_USERS ).document( currentUser.getUid() ).collection( FB_USER_DATA ).document( FB_MY_CART ).update( addProduct ).addOnCompleteListener( task1 -> {
                                             if (task1.isSuccessful()) {
                                                 if (cartItemModelList.size() != 0) {
-                                                    cartItemModelList.add(
+                                                    cartItemModelList.add(0,
                                                             new CartItemModel( CartItemModel.CART_ITEM,
                                                                     productId,
                                                                     documentSnapshot.get( "product_image_1", String.class ),
@@ -474,11 +477,34 @@ public class PRoductDEtailshActivity extends AppCompatActivity {
 
 
         binding.buyNowBtn.setOnClickListener( view -> {
+            loadingDialog.show();
             if (currentUser == null) {
                 signInDialog.show();
             } else {
-                Intent deliveryIntent = new Intent( PRoductDEtailshActivity.this, DeliveryActivity.class );
-                startActivity( deliveryIntent );
+//                DeliveryActivity.cartItemModelList.clear();
+                DeliveryActivity.cartItemModelList = new ArrayList<>();
+                DeliveryActivity.cartItemModelList.add(
+                        new CartItemModel( CartItemModel.CART_ITEM,
+                                productId,
+                                documentSnapshot.get( "product_image_1", String.class ),
+                                documentSnapshot.get( FB_PRODUCT_TITLE, String.class ),
+                                documentSnapshot.get( FB_FREE_COUPENS, Long.class ),
+                                documentSnapshot.get( FB_PRODUCT_PRICE, String.class ),
+                                documentSnapshot.get( FB_CUTTED_PRICE, String.class ),
+                                (long) 1,
+                                (long) 0,
+                                (long) 0,
+                                (Boolean) documentSnapshot.get( FB_IN_STOCK ) ) );
+
+                DeliveryActivity.cartItemModelList.add( new CartItemModel( CartItemModel.TOTAL_AMOUNT ) );
+
+                if (DBqueries.addressesModelList.size() == 0) {
+                    DBqueries.loadAddresses( PRoductDEtailshActivity.this, loadingDialog );
+                } else {
+                    loadingDialog.dismiss();
+                    Intent deliveryIntent = new Intent( PRoductDEtailshActivity.this, DeliveryActivity.class );
+                    startActivity( deliveryIntent );
+                }
             }
         } );
 
@@ -630,7 +656,7 @@ public class PRoductDEtailshActivity extends AppCompatActivity {
 
         if (currentUser != null) {
             if (DBqueries.cartList.size() == 0) {
-                DBqueries.loadCartList( PRoductDEtailshActivity.this, loadingDialog, false, badgeCount );
+                DBqueries.loadCartList( PRoductDEtailshActivity.this, loadingDialog, false, badgeCount,new TextView( PRoductDEtailshActivity.this ) );
             } else {
                 badgeCount.setVisibility( View.VISIBLE );
                 if (DBqueries.cartList.size() < 99) {

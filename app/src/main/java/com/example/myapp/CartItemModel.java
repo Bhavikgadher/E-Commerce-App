@@ -258,7 +258,7 @@ public class CartItemModel {
                     if (!PRoductDEtailshActivity.running_cart_query) {
                         PRoductDEtailshActivity.running_cart_query = true;
 
-                        DBqueries.removeFromCart( position, itemView.getContext() );
+                        DBqueries.removeFromCart( position, itemView.getContext(),cartTotalAmount );
 
                     }
                 }
@@ -296,10 +296,12 @@ public class CartItemModel {
             cartTotalAmount.setText( "Rs." + totalAmountText + "/-" );
             savedAmount.setText( "You Saved Rs." + savedAmountText + "/- on this order." );
 
+            LinearLayout parent = (LinearLayout) cartTotalAmount.getParent().getParent();
             if (totalItemPriceText == 0) {
                 DBqueries.cartItemModelList.remove( DBqueries.cartItemModelList.size() - 1 );
-                LinearLayout parent = (LinearLayout) cartTotalAmount.getParent().getParent();
                 parent.setVisibility( View.GONE );
+            }else{
+                parent.setVisibility( View.VISIBLE );
             }
         }
     }

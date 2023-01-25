@@ -11,8 +11,11 @@ import androidx.databinding.DataBindingUtil;
 
 import com.example.myapp.databinding.ActivityDeliveryBinding;
 
+import java.util.List;
+
 public class DeliveryActivity extends AppCompatActivity {
 
+    public static List<CartItemModel> cartItemModelList;
     private ActivityDeliveryBinding binding;
     public static final int SELECT_ADDRESS =  0;
 //    private RecyclerView deliveryRecyclerView;
@@ -25,7 +28,7 @@ public class DeliveryActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled( true );
         getSupportActionBar().setTitle( "Delivery" );
 
-        CartAdapter cartAdapter = new CartAdapter( DBqueries.cartItemModelList,binding.totalCartAmount,false);
+        CartAdapter cartAdapter = new CartAdapter( cartItemModelList,binding.totalCartAmount,false);
         binding.rvDelivery.setAdapter( cartAdapter );
         cartAdapter.notifyDataSetChanged();
 
