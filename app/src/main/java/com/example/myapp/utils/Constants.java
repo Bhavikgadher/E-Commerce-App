@@ -45,6 +45,7 @@ public class Constants {
     public static String FB_CUTTED_PRICE = "cutted_price";
     public static String FB_PRODUCT_PRICE = "product_price";
     public static String FB_COD = "COD";
+    public static String FB_IN_STOCK = "in_stock";
     public static String FB_FREE_COUPENS = "free_coupens";
     public static String FB_FREE_COUPEN_TITLE = "free_coupen_title";
     public static String FB_FREE_COUPEN_BODY = "free_coupen_body";

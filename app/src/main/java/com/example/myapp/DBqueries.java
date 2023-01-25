@@ -17,6 +17,7 @@ import static com.example.myapp.utils.Constants.FB_CUTTED_PRICE_;
 import static com.example.myapp.utils.Constants.FB_FREE_COUPENS;
 import static com.example.myapp.utils.Constants.FB_FREE_COUPENS_;
 import static com.example.myapp.utils.Constants.FB_FULLNAME_;
+import static com.example.myapp.utils.Constants.FB_IN_STOCK;
 import static com.example.myapp.utils.Constants.FB_LIST_SIZE;
 import static com.example.myapp.utils.Constants.FB_MY_ADDRESSES;
 import static com.example.myapp.utils.Constants.FB_MY_CART;
@@ -364,7 +365,8 @@ public class DBqueries {
                                                                         task.getResult().get( FB_CUTTED_PRICE, String.class ),
                                                                         (long) 1,
                                                                         (long) 0,
-                                                                        (long) 0 ) );
+                                                                        (long) 0,
+                                                                        (boolean) task.getResult().get( FB_IN_STOCK ) ) );
                                                         if (cartList.size() == 1) {
                                                             cartItemModelList.add( new CartItemModel( CartItemModel.TOTAL_AMOUNT ) );
                                                         }
@@ -452,7 +454,7 @@ public class DBqueries {
                             deliveryIntent = new Intent( context, DeliveryActivity.class );
                         } else {
                             deliveryIntent = new Intent( context, AddAdressActivity.class );
-                            deliveryIntent.putExtra( "INTENT","deliveryIntent" );
+                            deliveryIntent.putExtra( "INTENT", "deliveryIntent" );
                         }
                         context.startActivity( deliveryIntent );
                     } else {

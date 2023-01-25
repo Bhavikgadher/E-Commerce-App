@@ -63,8 +63,9 @@ public class CartAdapter extends RecyclerView.Adapter {
                 String cuttedPrice = cartItemModelList.get( position ).getCuttedPrice();
                 Long productQuantiy = cartItemModelList.get( position ).getProductQuantiy();
                 Long offersApplied = cartItemModelList.get( position ).getOffersApplied();
+                boolean inStock = cartItemModelList.get( position ).isInStock();
 
-                ((CartItemModel.CartItemViewholder) holder).setItemDetails( productID, resource, title, freeCopens, productPrice, cuttedPrice, productQuantiy, offersApplied, position );
+                ((CartItemModel.CartItemViewholder) holder).setItemDetails( productID, resource, title, freeCopens, productPrice, cuttedPrice, productQuantiy, offersApplied, position,inStock );
                 break;
             case CartItemModel.TOTAL_AMOUNT:
                 int totalItems = 0;
@@ -73,7 +74,7 @@ public class CartAdapter extends RecyclerView.Adapter {
                 int totalAmount;
                 int saveAmount = 0;
                 for (int i = 0; i < cartItemModelList.size(); i++) {
-                    if (cartItemModelList.get( i ).getType() == CartItemModel.CART_ITEM) {
+                    if (cartItemModelList.get( i ).getType() == CartItemModel.CART_ITEM && cartItemModelList.get( i ).isInStock()) {
                         totalItems++;
                         totalItemsPrice = parseInt( totalItemsPrice + cartItemModelList.get( i ).getProductPrice() );//, na chale okk try again done done birooo
                     }
