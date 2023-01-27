@@ -71,5 +71,16 @@ dependencies {
     //circleImageView
     implementation 'de.hdodenhof:circleimageview:3.1.0'
 
+    //paytm
+//    implementation 'com.paytm:pgplussdk:1.4.4'
+
+    // razorpay
+    implementation 'com.razorpay:checkout:1.6.26'
+
+    // volley
+    implementation 'com.android.volley:volley:1.2.1'
+
+    // gpay
+    implementation 'com.google.android.gms:play-services-wallet:19.1.0'
 
 }
