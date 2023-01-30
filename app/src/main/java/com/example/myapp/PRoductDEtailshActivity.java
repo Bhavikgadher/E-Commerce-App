@@ -36,6 +36,7 @@ import static com.example.myapp.utils.Constants.FB__VALUE;
 import static com.example.myapp.utils.Constants.FB__star;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -78,6 +79,8 @@ public class PRoductDEtailshActivity extends AppCompatActivity {
     public static ActivityProductDetailshBinding binding;
     public static boolean ALREADY_ADDED_TO_WISHLIST = false;
     public static boolean ALREADY_ADDED_TO_CART = false;
+    public static Activity prodcutDetailsActivity;
+
     private ProductDetailsAdapter productDetailsAdapter;
     private ProductImagesAdapter productImagesAdapter;
 
@@ -200,8 +203,8 @@ public class PRoductDEtailshActivity extends AppCompatActivity {
                         if (DBqueries.myRating.size() == 0) {
                             DBqueries.loadRatingList( PRoductDEtailshActivity.this );
                         }
-                        if (DBqueries.cartList.size() == 0){
-                            DBqueries.loadCartList( PRoductDEtailshActivity.this,loadingDialog,false,badgeCount,new TextView( PRoductDEtailshActivity.this ) );
+                        if (DBqueries.cartList.size() == 0) {
+                            DBqueries.loadCartList( PRoductDEtailshActivity.this, loadingDialog, false, badgeCount, new TextView( PRoductDEtailshActivity.this ) );
                         }
                         if (DBqueries.wishList.size() == 0) {
                             DBqueries.loadWishlist( PRoductDEtailshActivity.this, loadingDialog, false );
@@ -249,7 +252,7 @@ public class PRoductDEtailshActivity extends AppCompatActivity {
                                         firebaseFirestore.collection( FB_USERS ).document( currentUser.getUid() ).collection( FB_USER_DATA ).document( FB_MY_CART ).update( addProduct ).addOnCompleteListener( task1 -> {
                                             if (task1.isSuccessful()) {
                                                 if (cartItemModelList.size() != 0) {
-                                                    cartItemModelList.add(0,
+                                                    cartItemModelList.add( 0,
                                                             new CartItemModel( CartItemModel.CART_ITEM,
                                                                     productId,
                                                                     documentSnapshot.get( "product_image_1", String.class ),
@@ -330,7 +333,8 @@ public class PRoductDEtailshActivity extends AppCompatActivity {
                                                     documentSnapshot.get( FB_TOTAL_RATINGS, Long.class ),
                                                     documentSnapshot.get( FB_PRODUCT_PRICE, String.class ),
                                                     documentSnapshot.get( FB_CUTTED_PRICE, String.class ),
-                                                    documentSnapshot.get( FB_COD ), Boolean.class ) );
+                                                    documentSnapshot.get( FB_COD, Boolean.class ),
+                                                    documentSnapshot.get( FB_IN_STOCK ), Boolean.class ) );
                                 }
                                 ALREADY_ADDED_TO_WISHLIST = true;
                                 binding.incContent.addToWishlistBtn.setSupportImageTintList( ContextCompat.getColorStateList( PRoductDEtailshActivity.this, R.color.red ) );
@@ -477,10 +481,11 @@ public class PRoductDEtailshActivity extends AppCompatActivity {
 
 
         binding.buyNowBtn.setOnClickListener( view -> {
-            loadingDialog.show();
             if (currentUser == null) {
                 signInDialog.show();
             } else {
+                loadingDialog.show();
+                prodcutDetailsActivity = PRoductDEtailshActivity.this;
                 DeliveryActivity.cartItemModelList = new ArrayList<>();
                 DeliveryActivity.cartItemModelList.add(
                         new CartItemModel( CartItemModel.CART_ITEM,
@@ -655,7 +660,7 @@ public class PRoductDEtailshActivity extends AppCompatActivity {
 
         if (currentUser != null) {
             if (DBqueries.cartList.size() == 0) {
-                DBqueries.loadCartList( PRoductDEtailshActivity.this, loadingDialog, false, badgeCount,new TextView( PRoductDEtailshActivity.this ) );
+                DBqueries.loadCartList( PRoductDEtailshActivity.this, loadingDialog, false, badgeCount, new TextView( PRoductDEtailshActivity.this ) );
             } else {
                 badgeCount.setVisibility( View.VISIBLE );
                 if (DBqueries.cartList.size() < 99) {
@@ -684,6 +689,7 @@ public class PRoductDEtailshActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
+            prodcutDetailsActivity = null;
             finish();
             return true;
         } else if (id == R.id.main_search_icon) {
@@ -705,5 +711,11 @@ public class PRoductDEtailshActivity extends AppCompatActivity {
             }
         }
         return super.onOptionsItemSelected( item );
+    }
+
+    @Override
+    public void onBackPressed() {
+        prodcutDetailsActivity = null;
+        super.onBackPressed();
     }
 }

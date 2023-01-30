@@ -2,6 +2,7 @@ package com.example.myapp;
 
 import static com.example.myapp.RegisterActivity.setSignUpFragment;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView badgeCount;
     private int scrollFlags;
     private AppBarLayout.LayoutParams params;
+    public static Activity mainActivity ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         binding.navView.setNavigationItemSelectedListener( this );
 
         if (showCart) {
+            mainActivity = this;
             binding.drawerLayout.setDrawerLockMode( binding.drawerLayout.LOCK_MODE_LOCKED_CLOSED );
             getSupportActionBar().setDisplayHomeAsUpEnabled( true );
             gotoFragment( "My Cart", new MyCartFragment() );
@@ -130,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             if (currentUser != null) {
                 if (DBqueries.cartList.size() == 0) {
-                    DBqueries.loadCartList( MainActivity.this, new Dialog( MainActivity.this ), false, badgeCount,new TextView( MainActivity.this ) );
+                    DBqueries.loadCartList( MainActivity.this, new Dialog( MainActivity.this ), false, badgeCount, new TextView( MainActivity.this ) );
                 } else {
                     badgeCount.setVisibility( View.VISIBLE );
                     if (DBqueries.cartList.size() < 99) {
@@ -177,6 +180,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return true;
         } else if (id == android.R.id.home) {
             if (showCart) {
+                mainActivity = null;
                 showCart = false;
                 finish();
                 return true;

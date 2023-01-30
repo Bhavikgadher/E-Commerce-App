@@ -10,10 +10,11 @@ public class WishlistModel {
     private long totalRating;
     private String productPrice;
     private String cuttedPrice;
-    private Class<Boolean> COD;
+    private boolean COD;
+    private Class<Boolean> inStock;
 
 
-    public WishlistModel(String productId,String productImage, String productTitle, Long freeCoupens, String rating, Long totalRating, String productPrice, String cuttedPrice, Object o, Class<Boolean> COD) {
+    public WishlistModel(String productId, String productImage, String productTitle, long freeCoupens, String rating, long totalRating, String productPrice, String cuttedPrice, boolean COD, boolean inStock) {
         this.productId = productId;
         this.productImage = productImage;
         this.productTitle = productTitle;
@@ -23,6 +24,19 @@ public class WishlistModel {
         this.productPrice = productPrice;
         this.cuttedPrice = cuttedPrice;
         this.COD = COD;
+    }
+
+    public WishlistModel(String productId, String product_image_1, String product_title_1, Long freeCoupens, String rating, Long totalRating, String price, String cuttedPrice, Boolean cod, Object o, Class<Boolean> booleanClass) {
+        this.productId = productId;
+        this.productImage =  product_image_1;
+        this.productTitle = product_title_1;
+        this.freeCoupens = freeCoupens;
+        this.rating = rating;
+        this.totalRating = totalRating;
+        this.productPrice = price;
+        this.cuttedPrice = cuttedPrice;
+        this.COD = cod;
+        this.inStock = booleanClass;
     }
 
     public String getProductId() {
@@ -89,11 +103,27 @@ public class WishlistModel {
         this.cuttedPrice = cuttedPrice;
     }
 
-    public Class<Boolean> getCOD() {
+    public boolean isCOD() {
         return COD;
     }
 
-    public void setCOD(Class<Boolean> COD) {
+    public void setCOD(boolean COD) {
         this.COD = COD;
+    }
+
+    public Class<Boolean> getInStock() {
+        return inStock;
+    }
+
+    public void setInStock(Class<Boolean> inStock) {
+        this.inStock = inStock;
+    }
+
+    public Class<Boolean> isInStock() {
+        return inStock;
+    }
+
+    public boolean getCOD() {
+        return isCOD();
     }
 }

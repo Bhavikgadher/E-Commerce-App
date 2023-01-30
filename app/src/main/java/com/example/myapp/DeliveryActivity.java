@@ -38,8 +38,9 @@ public class DeliveryActivity extends AppCompatActivity implements PaymentResult
     private Dialog loadingDialog;
     private Dialog paymentMethodDialog;
     private ImageButton gpay;
-//    private RecyclerView deliveryRecyclerView;
+    private boolean successResponse = false;
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
@@ -47,6 +48,7 @@ public class DeliveryActivity extends AppCompatActivity implements PaymentResult
         setSupportActionBar( binding.toolbar );
         getSupportActionBar().setDisplayHomeAsUpEnabled( true );
         getSupportActionBar().setTitle( "Delivery" );
+        Checkout.preload( getApplicationContext() );
 
         /// loading dialog
         loadingDialog = new Dialog( DeliveryActivity.this );
@@ -85,6 +87,11 @@ public class DeliveryActivity extends AppCompatActivity implements PaymentResult
                 paymentMethodDialog.show();
             }
         } );
+//        binding.getToPay.getSettings().setJavaScriptEnabled( true );
+//        binding.getToPay.getSettings().setBuiltInZoomControls( true );
+//        binding.getToPay.getSettings().setDisplayZoomControls( true );
+//        binding.getToPay.setWebViewClient( new WebViewClient() );
+//        binding.getToPay.loadUrl( "https://rzp.io/l/miracleKMC" );
 
         gpay.setOnClickListener( new View.OnClickListener() {
             @SuppressLint("RestrictedApi")
@@ -96,8 +103,9 @@ public class DeliveryActivity extends AppCompatActivity implements PaymentResult
                     ActivityCompat.requestPermissions( DeliveryActivity.this, new String[]{Manifest.permission.READ_SMS, Manifest.permission.RECEIVE_SMS}, 101 );
                 }
                 Checkout checkout = new Checkout();
-                checkout.setKeyID( "" );
+                checkout.setKeyID( "<YOUR_KEY_ID>" );
                 checkout.setImage( R.id.gpay );
+                Checkout.sdkCheckIntegration( DeliveryActivity.this );
 //                String M_id = "";
 //                String customer_id = FirebaseAuth.getInstance().getUid();
                 String order_id = UUID.randomUUID().toString().substring( 0, 28 );
@@ -105,7 +113,7 @@ public class DeliveryActivity extends AppCompatActivity implements PaymentResult
 //                String callBackUrl = "https://pguat.paytm.com/paytmchecksum...";
 
 
-                double finalAmount = Float.parseFloat( String.valueOf( binding.totalCartAmount ) )*100;
+                double finalAmount = Float.parseFloat( String.valueOf( binding.totalCartAmount ) ) * 100;
 
 //                RequestQueue requestQueue = Volley.newRequestQueue( DeliveryActivity.this );
 
@@ -155,23 +163,24 @@ public class DeliveryActivity extends AppCompatActivity implements PaymentResult
                 try {
                     JSONObject options = new JSONObject();
 
-                    options.put("name", "Miracle");
-                    options.put("description", "Reference No. #123456");
-                    options.put("image", "https://s3.amazonaws.com/rzp-mobile/images/rzp.jpg");
-                    options.put("order_id", order_id+"");//from response of step 3.
-                    options.put("theme.color", "#3399cc");
-                    options.put("currency", "INR");
-                    options.put("amount", finalAmount +"");//pass amount in currency subunits
+                    options.put( "name", "Miracle" );
+                    options.put( "description", "Reference No. #123456" );
+                    options.put( "image", "https://s3.amazonaws.com/rzp-mobile/images/rzp.jpg" );
+                    options.put( "order_id", order_id + "" );//from response of step 3.
+                    options.put( "theme.color", "#3399cc" );
+                    options.put( "currency", "INR" );
+                    options.put( "amount", finalAmount + "" );//pass amount in currency subunits
 
                     JSONObject retryObj = new JSONObject();
-                    retryObj.put("enabled", true);
-                    retryObj.put("max_count", 4);
-                    options.put("retry", retryObj);
-                    checkout.open(DeliveryActivity.this, options);
+                    retryObj.put( "enabled", true );
+                    retryObj.put( "max_count", 4 );
+                    options.put( "retry", retryObj );
+                    checkout.open( DeliveryActivity.this, options );
 
-                } catch(Exception e) {
-                    Log.e(TAG, "Error in starting Razorpay Checkout", e);
+                } catch (Exception e) {
+                    Log.e( TAG, "Error in starting Razorpay Checkout", e );
                 }
+
             }
         } );
     }
@@ -196,10 +205,30 @@ public class DeliveryActivity extends AppCompatActivity implements PaymentResult
         return super.onOptionsItemSelected( item );
     }
 
+
     @Override
     public void onPaymentSuccess(String s) {
-        Toast.makeText( this, "Payment Success", Toast.LENGTH_SHORT ).show();
+//        Toast.makeText( this, "Payment Success", Toast.LENGTH_SHORT ).show();
+//        binding.orderId.setText( "Order ID" + .getString( "order_id") );
+        successResponse = true;
+        if (MainActivity.mainActivity != null) {
+            MainActivity.mainActivity.finish();
+            MainActivity.mainActivity = null;
+            MainActivity.showCart = false;
+        }
+        if (PRoductDEtailshActivity.prodcutDetailsActivity != null) {
+            PRoductDEtailshActivity.prodcutDetailsActivity.finish();
+            PRoductDEtailshActivity.prodcutDetailsActivity = null;
+        }
+        binding.orderConfirmationLayout.setVisibility( View.VISIBLE );
+        binding.continueShoppingBtn.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        } );
     }
+
 
     @Override
     public void onPaymentError(int i, String s) {
@@ -210,5 +239,14 @@ public class DeliveryActivity extends AppCompatActivity implements PaymentResult
     protected void onPause() {
         super.onPause();
         loadingDialog.dismiss();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (successResponse){
+            finish();
+            return;
+        }
+        super.onBackPressed();
     }
 }

@@ -171,7 +171,8 @@ public class DBqueries {
                                                 documentSnapshot.get( FB_TOTAL_RATINGS_ + i, Long.class ),
                                                 documentSnapshot.get( FB_PRODUCT_PRICE_ + i, String.class ),
                                                 documentSnapshot.get( FB_CUTTED_PRICE_ + i, String.class ),
-                                                documentSnapshot.get( FB_COD_ + i ), Boolean.class ) );
+                                                documentSnapshot.get( FB_COD_ + i, Boolean.class ),
+                                                documentSnapshot.get( FB_IN_STOCK + i, Boolean.class ) ) );
                             }
                             lists.get( index ).add( new HomePageModel( 2, documentSnapshot.get( "layout_title" ).toString(),
                                     documentSnapshot.get( "layout_background" ).toString(), horizontalProductScrollModelList, viewAllProductList ) );
@@ -246,7 +247,8 @@ public class DBqueries {
                                                                         task.getResult().get( FB_TOTAL_RATINGS, Long.class ),
                                                                         task.getResult().get( FB_PRODUCT_PRICE, String.class ),
                                                                         task.getResult().get( FB_CUTTED_PRICE, String.class ),
-                                                                        task.getResult().get( FB_COD ), Boolean.class ) );
+                                                                        task.getResult().get( FB_COD,Boolean.class ),
+                                                                task.getResult().get( FB_IN_STOCK ), Boolean.class ));
                                                         MyWishlistFragment.wishlistAdapter.notifyDataSetChanged();
 
                                                     } else {
@@ -329,7 +331,7 @@ public class DBqueries {
         }
     }
 
-    public static void loadCartList(Context context, Dialog dialog, boolean loadProductData, TextView badgeCount,TextView cartTotalAmount) {
+    public static void loadCartList(Context context, Dialog dialog, boolean loadProductData, TextView badgeCount, TextView cartTotalAmount) {
         cartList.clear();
         firebaseFirestore.collection( FB_USERS ).document( FirebaseAuth.getInstance().getUid() ).collection( FB_USER_DATA ).document( FB_MY_CART )
                 .get().addOnCompleteListener( new OnCompleteListener<DocumentSnapshot>() {
@@ -407,7 +409,7 @@ public class DBqueries {
 
     }
 
-    public static void removeFromCart(int index, Context context,TextView cartTotalAmount) {
+    public static void removeFromCart(int index, Context context, TextView cartTotalAmount) {
         String removedProductId = cartList.get( index );
         cartList.remove( index );
         Map<String, Object> updateCartList = new HashMap<>();
